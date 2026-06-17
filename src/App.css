@@ -1416,6 +1416,58 @@
   color: var(--text-muted);
 }
 
+.document-versions-file-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin: 0;
+}
+
+.document-versions-file-label.disabled {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.document-versions-file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.document-versions-paste {
+  flex: 1 1 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.document-versions-paste-input {
+  width: 100%;
+  min-height: 140px;
+  padding: 10px 12px;
+  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  resize: vertical;
+}
+
+.document-versions-import-error {
+  flex: 1 1 100%;
+  margin: 0;
+}
+
 .document-versions-actions {
   display: flex;
   flex-wrap: wrap;
@@ -1673,5 +1725,321 @@
 @media (max-width: 900px) {
   .batch-export-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ── Планшет / мобільний ── */
+@media (max-width: 768px) {
+  .app-shell,
+  .cylinder-layout {
+    padding: 12px;
+    padding-left: max(12px, env(safe-area-inset-left));
+    padding-right: max(12px, env(safe-area-inset-right));
+  }
+
+  .top-bar {
+    padding: 8px 12px 0;
+    padding-left: max(12px, env(safe-area-inset-left));
+    padding-right: max(12px, env(safe-area-inset-right));
+  }
+
+  .app-header {
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .app-header h1 {
+    font-size: 1.45rem;
+    line-height: 1.2;
+  }
+
+  .subtitle {
+    font-size: 0.92rem;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .status-pill {
+    white-space: normal;
+    max-width: 100%;
+    line-height: 1.35;
+  }
+
+  .page-nav {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 6px;
+    margin-bottom: 10px;
+    padding-bottom: 4px;
+  }
+
+  .page-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav-btn {
+    flex-shrink: 0;
+    padding: 8px 12px;
+    font-size: 0.86rem;
+  }
+
+  .page-toolbar {
+    padding: 12px;
+  }
+
+  .toolbar-actions {
+    gap: 8px;
+  }
+
+  .toolbar-actions .btn {
+    flex: 1 1 calc(50% - 4px);
+    min-width: 0;
+    text-align: center;
+  }
+
+  .toolbar-actions .btn.primary {
+    flex-basis: 100%;
+  }
+
+  .panel {
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .section-block {
+    padding: 14px;
+  }
+
+  .document-versions-head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .document-versions-save {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .document-versions-save input,
+  .document-versions-save .btn {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .document-versions-list li {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .document-versions-actions {
+    width: 100%;
+  }
+
+  .document-versions-actions .btn {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .nav-plan-filters,
+  .table-text-filters,
+  .cylinder-filters {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  .nav-plan-filters .filter-inline,
+  .table-text-filters .filter-inline,
+  .cylinder-filters .filter-inline {
+    width: 100%;
+  }
+
+  .nav-plan-filters .filter-inline input,
+  .nav-plan-filters .filter-inline select,
+  .table-text-filters .filter-inline input,
+  .cylinder-filters .filter-inline input {
+    width: 100%;
+    min-width: 0 !important;
+    max-width: none !important;
+  }
+
+  .nav-plan-filters .filter-subject input,
+  .nav-plan-filters .filter-search input {
+    min-width: 0;
+    max-width: none;
+  }
+
+  .cylinder-filter-stats {
+    margin-left: 0;
+    width: 100%;
+    white-space: normal;
+    padding-bottom: 0;
+  }
+
+  .cylinder-filter-reset {
+    width: 100%;
+  }
+
+  .cylinder-header-top {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .legend {
+    gap: 8px 10px;
+  }
+
+  .legend-item {
+    font-size: 0.8rem;
+  }
+
+  .selected-pair-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .selected-pair-bar-fields {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .selected-pair-bar-fields > div {
+    display: grid;
+    grid-template-columns: minmax(72px, 34%) 1fr;
+    gap: 4px 8px;
+    align-items: start;
+  }
+
+  .selected-pair-bar-conflicts {
+    flex-basis: auto;
+    width: 100%;
+  }
+
+  .cylinder-viewport {
+    min-height: min(52vh, 420px);
+    height: min(52vh, 420px);
+  }
+
+  .cylinder-viewport .scene-canvas-wrap,
+  .cylinder-viewport .scene-canvas {
+    min-height: min(52vh, 420px);
+    height: 100%;
+  }
+
+  .viewport-hint {
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    max-width: calc(100% - 20px);
+    font-size: 0.72rem;
+    line-height: 1.3;
+    border-radius: 12px;
+  }
+
+  .nav-plan-scroll {
+    max-height: min(calc(100vh - 220px), 640px);
+  }
+
+  .nav-plan-classify-bar {
+    gap: 6px;
+  }
+
+  .classify-chip {
+    font-size: 0.76rem;
+    padding: 5px 10px;
+  }
+
+  .template-chips {
+    gap: 6px;
+  }
+
+  .chip {
+    font-size: 0.72rem;
+    line-height: 1.35;
+  }
+
+  .batch-export-footer .btn.primary {
+    width: 100%;
+  }
+
+  .section-head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* ── Вузький екран ── */
+@media (max-width: 480px) {
+  .app-shell,
+  .cylinder-layout {
+    padding: 10px;
+  }
+
+  .app-header h1 {
+    font-size: 1.28rem;
+  }
+
+  .eyebrow {
+    font-size: 0.76rem;
+  }
+
+  .toolbar-actions .btn {
+    flex-basis: 100%;
+  }
+
+  .theme-toggle {
+    padding: 8px 12px;
+    font-size: 0.88rem;
+  }
+
+  .cylinder-viewport {
+    min-height: 300px;
+    height: min(48vh, 360px);
+  }
+
+  .cylinder-viewport .scene-canvas-wrap,
+  .cylinder-viewport .scene-canvas {
+    min-height: 300px;
+  }
+
+  .viewport,
+  .scene-canvas {
+    min-height: 300px;
+  }
+
+  .viewport-hint {
+    display: none;
+  }
+
+  .data-table {
+    font-size: 0.84rem;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 8px 8px;
+  }
+
+  .document-versions-meta {
+    word-break: break-word;
+  }
+
+  .cylinder-print-actions {
+    flex-direction: column;
+  }
+
+  .cylinder-print-actions .btn {
+    width: 100%;
   }
 }

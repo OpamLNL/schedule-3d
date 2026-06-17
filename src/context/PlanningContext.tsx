@@ -39,8 +39,10 @@ import {
   parseNavPlanImport,
   snapshotToExportDocument,
 } from '../utils/navPlanJsonExchange'
+import { parseImportJsonText, readImportFileText } from '../utils/jsonImportText'
 import {
   exportCurrentScheduleJson as exportCurrentScheduleJsonFile,
+  exportCurrentScheduleTxt as exportCurrentScheduleTxtFile,
   parseScheduleImport,
 } from '../utils/scheduleJsonExchange'
 import { ensureEditorName } from '../storage/editorIdentity'
@@ -81,8 +83,11 @@ type PlanningContextValue = {
   deleteNavPlanVersion: (id: string) => Promise<void>
   exportCurrentNavPlanJson: (label?: string, note?: string) => void
   importNavPlanJson: (file: File) => Promise<void>
+  importNavPlanJsonText: (text: string) => Promise<void>
   importScheduleJson: (file: File) => Promise<void>
+  importScheduleJsonText: (text: string) => Promise<void>
   exportCurrentScheduleJson: (label?: string, note?: string) => void
+  exportCurrentScheduleTxt: (label?: string, note?: string) => void
   savePrintScheduleView: (
     kind: 'group' | 'teacher',
     targetName: string,
@@ -288,15 +293,9 @@ export function PlanningProvider({ children }: { children: ReactNode }) {
     [store],
   )
 
-  const importNavPlanJson = useCallback(
-    async (file: File) => {
-      const text = await file.text()
-      let parsed: unknown
-      try {
-        parsed = JSON.parse(text)
-      } catch {
-        throw new Error('Файл не є коректним JSON')
-      }
+  const importNavPlanJsonText = useCallback(
+    async (text: string, fileLabel?: string) => {
+      const parsed = parseImportJsonText(text, fileLabel)
       const doc = parseNavPlanImport(parsed)
       if (doc.payload.navPlan.length === 0) throw new Error('У JSON немає рядків навплану')
       const next = applyNavPlanImport(store, doc)
@@ -309,23 +308,37 @@ export function PlanningProvider({ children }: { children: ReactNode }) {
     [store],
   )
 
-  const importScheduleJson = useCallback(
+  const importNavPlanJson = useCallback(
     async (file: File) => {
-      const text = await file.text()
-      let parsed: unknown
-      try {
-        parsed = JSON.parse(text)
-      } catch {
-        throw new Error('Файл не є коректним JSON')
-      }
+      const text = await readImportFileText(file)
+      await importNavPlanJsonText(text, file.name)
+    },
+    [importNavPlanJsonText],
+  )
+
+  const importScheduleJsonText = useCallback(
+    async (text: string, fileLabel?: string) => {
+      const parsed = parseImportJsonText(text, fileLabel)
       const doc = parseScheduleImport(parsed)
       if (doc.schedule.groups.length === 0) throw new Error('У JSON немає груп')
       persistSchedule(doc.schedule, doc.edited)
+      await saveScheduleDocument(doc.schedule, doc.label, {
+        note: doc.note,
+        edited: doc.edited,
+      })
       setStatus(
-        `Імпорт JSON · ${doc.schedule.groups.length} груп · ${doc.schedule.entries.length} пар · «${doc.label}» · ${doc.savedBy}`,
+        `Імпорт успішний · ${doc.schedule.groups.length} груп · ${doc.schedule.entries.length} пар · «${doc.label}» · прокрутіть вгору до «Результат» або «Відкрити 3D»`,
       )
     },
     [persistSchedule],
+  )
+
+  const importScheduleJson = useCallback(
+    async (file: File) => {
+      const text = await readImportFileText(file)
+      await importScheduleJsonText(text, file.name)
+    },
+    [importScheduleJsonText],
   )
 
   const exportCurrentScheduleJson = useCallback(
@@ -337,6 +350,20 @@ export function PlanningProvider({ children }: { children: ReactNode }) {
       exportCurrentScheduleJsonFile(schedule, { label, note })
       setStatus(
         `Експорт JSON · ${schedule.groups.length} груп · ${schedule.entries.length} пар · ${new Date().toLocaleString('uk-UA')}`,
+      )
+    },
+    [schedule],
+  )
+
+  const exportCurrentScheduleTxt = useCallback(
+    (label?: string, note?: string) => {
+      if (!schedule) {
+        setStatus('Немає активного розкладу для експорту')
+        return
+      }
+      exportCurrentScheduleTxtFile(schedule, { label, note })
+      setStatus(
+        `Експорт TXT · ${schedule.groups.length} груп · ${schedule.entries.length} пар · для Android · ${new Date().toLocaleString('uk-UA')}`,
       )
     },
     [schedule],
@@ -431,8 +458,11 @@ export function PlanningProvider({ children }: { children: ReactNode }) {
       deleteNavPlanVersion: deleteNavPlanSnapshot,
       exportCurrentNavPlanJson,
       importNavPlanJson,
+      importNavPlanJsonText,
       importScheduleJson,
+      importScheduleJsonText,
       exportCurrentScheduleJson,
+      exportCurrentScheduleTxt,
       savePrintScheduleView,
       listPrintScheduleViews: listPrintSchedules,
       deletePrintScheduleView: deletePrintSchedule,
@@ -455,8 +485,11 @@ export function PlanningProvider({ children }: { children: ReactNode }) {
       restoreNavPlanVersion,
       exportCurrentNavPlanJson,
       importNavPlanJson,
+      importNavPlanJsonText,
       importScheduleJson,
+      importScheduleJsonText,
       exportCurrentScheduleJson,
+      exportCurrentScheduleTxt,
       savePrintScheduleView,
       printSavedSchedule,
       printScheduleView,

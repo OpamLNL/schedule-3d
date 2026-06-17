@@ -424,12 +424,21 @@ export function createPrintScheduleDocument(
   }
 }
 
-export function downloadJsonFile(data: unknown, filename: string): void {
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json;charset=utf-8' })
+function triggerTextDownload(content: string, filename: string, mimeType: string): void {
+  const blob = new Blob([content], { type: mimeType })
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
   link.href = url
   link.download = filename
   link.click()
   URL.revokeObjectURL(url)
+}
+
+export function downloadJsonFile(data: unknown, filename: string): void {
+  triggerTextDownload(JSON.stringify(data, null, 2), filename, 'application/json;charset=utf-8')
+}
+
+/** Той самий вміст, що JSON, але з розширенням .txt — Android частіше бачить такий файл. */
+export function downloadTextFile(data: unknown, filename: string): void {
+  triggerTextDownload(JSON.stringify(data, null, 2), filename, 'text/plain;charset=utf-8')
 }

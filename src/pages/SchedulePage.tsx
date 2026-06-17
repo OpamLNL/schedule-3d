@@ -21,7 +21,9 @@ export function SchedulePage({ page, onPageChange }: PageProps) {
     listScheduleVersions,
     deleteScheduleVersion,
     importScheduleJson,
+    importScheduleJsonText,
     exportCurrentScheduleJson,
+    exportCurrentScheduleTxt,
     status,
     setStatus,
   } = usePlanning()
@@ -155,14 +157,10 @@ export function SchedulePage({ page, onPageChange }: PageProps) {
         onLoad={loadScheduleVersion}
         onDelete={deleteScheduleVersion}
         onExport={exportScheduleDocumentJson}
-        onImport={async (file) => {
-          try {
-            await importScheduleJson(file)
-          } catch (err) {
-            setStatus(err instanceof Error ? err.message : 'Помилка імпорту')
-          }
-        }}
+        onImport={importScheduleJson}
+        onImportText={importScheduleJsonText}
         onExportCurrent={exportCurrentScheduleJson}
+        onExportCurrentTxt={exportCurrentScheduleTxt}
         canExportCurrent={Boolean(schedule)}
       />
 

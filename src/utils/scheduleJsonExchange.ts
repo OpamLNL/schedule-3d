@@ -8,7 +8,7 @@ import type {
   Teacher,
 } from '../types/schedule'
 import { ensureEditorName } from '../storage/editorIdentity'
-import { downloadJsonFile } from './schedulePrintExport'
+import { downloadJsonFile, downloadTextFile } from './schedulePrintExport'
 
 export const SCHEDULE_JSON_TYPE = 'schedule3d-schedule-v1'
 
@@ -173,4 +173,23 @@ export function exportCurrentScheduleJson(
   }
   const safe = label.replace(/[^\w\u0400-\u04FF-]+/g, '_').slice(0, 40) || 'schedule'
   downloadJsonFile(payload, `schedule-${safe}-${savedAt.slice(0, 10)}.json`)
+}
+
+export function exportCurrentScheduleTxt(
+  schedule: ScheduleData,
+  options?: { label?: string; note?: string },
+): void {
+  const label = options?.label?.trim() || `Розклад ${new Date().toLocaleDateString('uk-UA')}`
+  const savedAt = new Date().toISOString()
+  const payload = {
+    type: SCHEDULE_JSON_TYPE,
+    label,
+    savedAt,
+    savedBy: ensureEditorName(),
+    note: options?.note?.trim() || undefined,
+    edited: false,
+    schedule: structuredClone(schedule),
+  }
+  const safe = label.replace(/[^\w\u0400-\u04FF-]+/g, '_').slice(0, 40) || 'schedule'
+  downloadTextFile(payload, `schedule-${safe}-${savedAt.slice(0, 10)}.txt`)
 }

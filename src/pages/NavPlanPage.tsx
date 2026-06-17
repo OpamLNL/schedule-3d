@@ -29,6 +29,7 @@ export function NavPlanPage({ page, onPageChange }: PageProps) {
     deleteNavPlanVersion,
     exportCurrentNavPlanJson,
     importNavPlanJson,
+    importNavPlanJsonText,
   } = usePlanning()
   const [filters, setFilters] = useState(defaultNavPlanFilters)
   const [importError, setImportError] = useState<string | null>(null)
@@ -236,15 +237,8 @@ export function NavPlanPage({ page, onPageChange }: PageProps) {
         onDelete={deleteNavPlanVersion}
         onExport={exportNavPlanSnapshotJson}
         onExportCurrent={(label, note) => exportCurrentNavPlanJson(label, note)}
-        onImport={async (file) => {
-          setImportError(null)
-          try {
-            await importNavPlanJson(file)
-            await refreshSnapshots()
-          } catch (err) {
-            setImportError(err instanceof Error ? err.message : 'Помилка імпорту JSON')
-          }
-        }}
+        onImport={importNavPlanJson}
+        onImportText={importNavPlanJsonText}
       />
 
       {store.navPlan.length > 0 ? (
