@@ -1,0 +1,95 @@
+%% Діаграма сутностей та зв'язків предметної області
+%% Рисунок 1.7 — Інформаційна модель даних
+%% Відкрити: https://mermaid.live → вставити код → Export PNG/SVG
+
+erDiagram
+    GRUPA ||--o{ RYADOK_NAVPLANU : "навантаження"
+    GRUPA ||--o{ ZANYATTYA : "заняття"
+    GRUPA ||--o{ PREF_DISCIPLINY : "правила дисциплін"
+
+    DOKUMENT_ROZKLADU ||--|{ ZANYATTYA : "містить"
+    DOKUMENT_ROZKLADU |o--o| VERSIYA_NAVPLANU : "на основі версії"
+    DOKUMENT_ROZKLADU ||--|| META_ROZKLADU : "метадані"
+
+    VERSIYA_NAVPLANU ||--o{ RYADOK_NAVPLANU : "знімок навплану"
+    VERSIYA_NAVPLANU ||--o{ GRUPA : "знімок груп"
+    VERSIYA_NAVPLANU ||--o{ PRAVYLO_AUDYTORIYI : "знімок правил"
+    VERSIYA_NAVPLANU ||--o{ PREF_VYKLADACHA : "знімок преференцій"
+    VERSIYA_NAVPLANU ||--o{ PREF_DISCIPLINY : "знімок преференцій"
+
+    PRAVYLO_AUDYTORIYI }o--o{ ZANYATTYA : "призначення кімнати"
+    PREF_VYKLADACHA }o--o{ ZANYATTYA : "обмеження слотів"
+    PREF_DISCIPLINY }o--o{ ZANYATTYA : "обмеження розміщення"
+
+    GRUPA {
+        string id PK
+        string code
+        int weeksFall
+        int weeksSpring
+        string room
+        int shift
+    }
+
+    RYADOK_NAVPLANU {
+        string id PK
+        string subject
+        string subjectNorm
+        string teacher
+        string groupCode FK
+        string planKind
+        int hoursSpring
+        int hoursFall
+    }
+
+    PRAVYLO_AUDYTORIYI {
+        string id PK
+        string subject
+        string teacher
+        string room
+    }
+
+    PREF_VYKLADACHA {
+        string id PK
+        string teacher
+        string rule
+    }
+
+    PREF_DISCIPLINY {
+        string id PK
+        string groupCode FK
+        string subject
+        string rule
+    }
+
+    VERSIYA_NAVPLANU {
+        string id PK
+        int version
+        string label
+        string savedAt
+        string savedBy
+    }
+
+    DOKUMENT_ROZKLADU {
+        string id PK
+        string label
+        string savedAt
+        string navPlanSnapshotId FK
+        int conflicts
+    }
+
+    META_ROZKLADU {
+        string days
+        int periodsPerDay
+        int totalSlots
+        string generatedAt
+    }
+
+    ZANYATTYA {
+        string id PK
+        string groupId FK
+        int slotId
+        string subject
+        string teacher
+        string room
+        string conflict
+    }

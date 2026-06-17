@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="620" viewBox="0 0 980 620">
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <polygon points="0 0, 8 4, 0 8" fill="#334155"/>
+    </marker>
+    <style>
+      text { font-family: Arial, Helvetica, sans-serif; fill: #0f172a; }
+      .title { font-size: 18px; font-weight: bold; text-anchor: middle; }
+      .ent { fill: #eff6ff; stroke: #1d4ed8; stroke-width: 2; }
+      .ent-g { fill: #ecfdf5; stroke: #047857; stroke-width: 2; }
+      .ent-r { fill: #fef3c7; stroke: #b45309; stroke-width: 2; }
+      .ent-name { font-size: 14px; font-weight: bold; text-anchor: middle; }
+      .attr { font-size: 11px; text-anchor: middle; fill: #334155; }
+      .rel { stroke: #475569; stroke-width: 1.6; fill: none; marker-end: url(#arr); }
+      .card { font-size: 12px; font-weight: bold; fill: #64748b; text-anchor: middle; }
+      .pk { fill: #1e40af; font-weight: bold; }
+    </style>
+  </defs>
+
+  <text class="title" x="490" y="28">V03@0<0 ACB=>AB59 ?@54<5B=>W >1;0ABV</text>
+
+  <!-- @C?0 -->
+  <rect class="ent-g" x="380" y="250" width="200" height="130" rx="8"/>
+  <text class="ent-name" x="480" y="272">@C?0</text>
+  <line x1="390" y1="280" x2="570" y2="280" stroke="#047857"/>
+  <text class="attr pk" x="480" y="298">id, code</text>
+  <text class="attr" x="480" y="314">weeksFall, weeksSpring</text>
+  <text class="attr" x="480" y="330">room, shift</text>
+  <text class="attr" x="480" y="346">specialty, course</text>
+  <text class="attr" x="480" y="362">name</text>
+
+  <!--  O4>: =02?;0=C -->
+  <rect class="ent" x="40" y="80" width="220" height="150" rx="8"/>
+  <text class="ent-name" x="150" y="102"> O4>: =02?;0=C</text>
+  <line x1="50" y1="110" x2="250" y2="110" stroke="#1d4ed8"/>
+  <text class="attr pk" x="150" y="128">id</text>
+  <text class="attr" x="150" y="144">subject, subjectNorm</text>
+  <text class="attr" x="150" y="160">teacher, groupCode</text>
+  <text class="attr" x="150" y="176">hoursSpring, hoursFall</text>
+  <text class="attr" x="150" y="192">planKind, planKindLabel</text>
+  <text class="attr" x="150" y="208">fallLectures, springPractical&</text>
+
+  <!-- @028;> 0C48B>@VW -->
+  <rect class="ent" x="40" y="280" width="220" height="100" rx="8"/>
+  <text class="ent-name" x="150" y="302">@028;> 0C48B>@VW</text>
+  <line x1="50" y1="310" x2="250" y2="310" stroke="#1d4ed8"/>
+  <text class="attr pk" x="150" y="328">id</text>
+  <text class="attr" x="150" y="344">subject, teacher</text>
+  <text class="attr" x="150" y="360">room</text>
+
+  <!-- @5D. 28:;040G0 -->
+  <rect class="ent" x="40" y="420" width="220" height="88" rx="8"/>
+  <text class="ent-name" x="150" y="442">@5D5@5=FVO 28:;040G0</text>
+  <line x1="50" y1="450" x2="250" y2="450" stroke="#1d4ed8"/>
+  <text class="attr pk" x="150" y="468">id</text>
+  <text class="attr" x="150" y="484">teacher, rule</text>
+
+  <!-- @5D. 48AF8?;V=8 -->
+  <rect class="ent" x="40" y="530" width="220" height="88" rx="8"/>
+  <text class="ent-name" x="150" y="552">@5D5@5=FVO 48AF8?;V=8</text>
+  <line x1="50" y1="560" x2="250" y2="560" stroke="#1d4ed8"/>
+  <text class="attr pk" x="150" y="578">id</text>
+  <text class="attr" x="150" y="594">groupCode, subject, rule</text>
+
+  <!--  >7:;04 (4>:C<5=B) -->
+  <rect class="ent-r" x="700" y="230" width="220" height="110" rx="8"/>
+  <text class="ent-name" x="810" y="252">>:C<5=B @>7:;04C</text>
+  <line x1="710" y1="260" x2="910" y2="260" stroke="#b45309"/>
+  <text class="attr pk" x="810" y="278">id</text>
+  <text class="attr" x="810" y="294">label, savedAt, savedBy</text>
+  <text class="attr" x="810" y="310">navPlanSnapshotId</text>
+  <text class="attr" x="810" y="326">stats, edited</text>
+
+  <!-- 0=OBBO -->
+  <rect class="ent-r" x="700" y="390" width="220" height="130" rx="8"/>
+  <text class="ent-name" x="810" y="412">0=OBBO @>7:;04C</text>
+  <line x1="710" y1="420" x2="910" y2="420" stroke="#b45309"/>
+  <text class="attr pk" x="810" y="438">id</text>
+  <text class="attr" x="810" y="454">groupId, slotId</text>
+  <text class="attr" x="810" y="470">subject, teacher, room</text>
+  <text class="attr" x="810" y="486">parallelBundleId</text>
+  <text class="attr" x="810" y="502">conflict (teacher / room)</text>
+
+  <!-- 5@AVO =02?;0=C -->
+  <rect class="ent" x="380" y="80" width="200" height="110" rx="8"/>
+  <text class="ent-name" x="480" y="102">5@AVO =02?;0=C</text>
+  <line x1="390" y1="110" x2="570" y2="110" stroke="#1d4ed8"/>
+  <text class="attr pk" x="480" y="128">id, version</text>
+  <text class="attr" x="480" y="144">label, savedAt, savedBy</text>
+  <text class="attr" x="480" y="160">payload (navPlan, groups&)</text>
+  <text class="attr" x="480" y="176">rowCount, columnsVersion</text>
+
+  <!-- Meta / 4>2V4=8:8 (small) -->
+  <rect class="ent-g" x="700" y="80" width="220" height="88" rx="8"/>
+  <text class="ent-name" x="810" y="102">5B040=V @>7:;04C</text>
+  <line x1="710" y1="110" x2="910" y2="110" stroke="#047857"/>
+  <text class="attr" x="810" y="128">days, periodsPerDay</text>
+  <text class="attr" x="810" y="144">totalSlots, generatedAt</text>
+  <text class="attr" x="810" y="160">sourceFile, note</text>
+
+  <!-- Relations -->
+  <path class="rel" d="M260 155 L340 155 L340 290 L380 290"/>
+  <text class="card" x="318" y="148">N</text>
+  <text class="card" x="368" y="282">1</text>
+
+  <path class="rel" d="M260 330 L350 330 L350 310 L380 310"/>
+  <text class="card" x="330" y="322">N</text>
+
+  <path class="rel" d="M260 464 L320 464 L320 340 L380 340"/>
+  <text class="card" x="300" y="456">N</text>
+
+  <path class="rel" d="M260 574 L300 574 L300 370 L380 370"/>
+  <text class="card" x="285" y="566">N</text>
+
+  <path class="rel" d="M480 190 L480 250"/>
+  <text class="card" x="492" y="222">1</text>
+  <text class="card" x="492" y="242">N</text>
+
+  <path class="rel" d="M580 315 L700 285"/>
+  <text class="card" x="628" y="292">1</text>
+  <text class="card" x="688" y="278">N</text>
+
+  <path class="rel" d="M810 340 L810 390"/>
+  <text class="card" x="822" y="362">1</text>
+  <text class="card" x="822" y="382">N</text>
+
+  <path class="rel" d="M580 455 L700 455"/>
+  <text class="card" x="628" y="446">1</text>
+  <text class="card" x="688" y="446">N</text>
+
+  <path class="rel" d="M580 135 L700 124"/>
+  <text class="card" x="628" y="122">1</text>
+  <text class="card" x="688" y="118">1</text>
+
+  <!-- Legend -->
+  <rect x="40" y="12" width="200" height="52" rx="6" fill="#fff" stroke="#cbd5e1"/>
+  <text class="attr" x="140" y="30" font-size="12" font-weight="bold">#<>2=V ?>7=0G5==O</text>
+  <text class="attr" x="140" y="48" font-size="11">1  >48=, N  1030B>; pk  :;NG</text>
+</svg>

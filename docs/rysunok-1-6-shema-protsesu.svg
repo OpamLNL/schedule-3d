@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="280" viewBox="0 0 880 280">
+  <defs>
+    <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#1e293b"/>
+    </marker>
+    <style>
+      text { font-family: Arial, Helvetica, sans-serif; fill: #0f172a; }
+      .t { font-size: 15px; text-anchor: middle; }
+      .ts { font-size: 12px; text-anchor: middle; fill: #475569; }
+      .title { font-size: 17px; font-weight: bold; text-anchor: middle; }
+      .b { fill: #f8fafc; stroke: #334155; stroke-width: 2; }
+      .ba { fill: #dbeafe; stroke: #1d4ed8; stroke-width: 2; }
+      .br { fill: #d1fae5; stroke: #047857; stroke-width: 2; }
+      .bd { fill: none; stroke: #94a3b8; stroke-width: 1.5; stroke-dasharray: 7 5; }
+      .ln { stroke: #1e293b; stroke-width: 2; fill: none; marker-end: url(#arr); }
+    </style>
+  </defs>
+
+  <text class="title" x="440" y="26">Схема процесу формування навчального розкладу</text>
+
+  <rect class="ba" x="20" y="105" width="120" height="68" rx="10"/>
+  <text class="t" x="80" y="135">Навплан</text>
+  <text class="ts" x="80" y="155">Excel</text>
+
+  <rect class="bd" x="170" y="42" width="150" height="194" rx="12"/>
+  <text class="ts" x="245" y="62">налаштування</text>
+
+  <rect class="b" x="190" y="78" width="110" height="42" rx="8"/>
+  <text class="t" x="245" y="105">Групи</text>
+
+  <rect class="b" x="190" y="132" width="110" height="42" rx="8"/>
+  <text class="t" x="245" y="159">Аудиторії</text>
+
+  <rect class="b" x="190" y="186" width="110" height="42" rx="8"/>
+  <text class="t" x="245" y="213">Преференції</text>
+
+  <rect class="ba" x="360" y="105" width="150" height="68" rx="10"/>
+  <text class="t" x="435" y="135">Автозбірка</text>
+  <text class="ts" x="435" y="155">розкладу</text>
+
+  <rect class="br" x="550" y="105" width="130" height="68" rx="10"/>
+  <text class="t" x="615" y="143">3Dперегляд</text>
+
+  <line class="ln" x1="140" y1="139" x2="170" y2="139"/>
+  <line class="ln" x1="320" y1="139" x2="360" y2="139"/>
+  <line class="ln" x1="510" y1="139" x2="550" y2="139"/>
+</svg>

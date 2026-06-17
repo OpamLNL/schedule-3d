@@ -1,0 +1,106 @@
+html[data-theme='dark'],
+html:not([data-theme]) {
+  color-scheme: dark;
+
+  --text: #e8eef8;
+  --text-muted: #b8c7de;
+  --text-soft: #9fb0cb;
+  --text-label: #8ea0bf;
+  --text-strong: #eef4ff;
+
+  --bg-top: #152238;
+  --bg-bottom: #0b1220;
+  --surface: rgba(17, 27, 44, 0.92);
+  --surface-solid: #111827;
+  --surface-input: #0f1724;
+  --border: rgba(120, 145, 185, 0.18);
+  --border-strong: rgba(120, 145, 185, 0.25);
+
+  --accent: #2563eb;
+  --accent-border: #3b82f6;
+  --accent-soft: rgba(59, 130, 246, 0.12);
+  --accent-text: #93c5fd;
+
+  --viewport-top: rgba(18, 30, 48, 0.95);
+  --viewport-bottom: rgba(10, 16, 28, 0.95);
+  --hint-bg: rgba(8, 13, 22, 0.72);
+
+  --success-bg: rgba(16, 185, 129, 0.15);
+  --success-text: #6ee7b7;
+  --error-bg: rgba(214, 69, 69, 0.15);
+  --error-text: #ffb4b4;
+  --warn-text: #ffb020;
+  --warn-list: #ffd9a0;
+  --danger-icon: #ffb4b4;
+  --row-hover: rgba(59, 130, 246, 0.08);
+}
+
+html[data-theme='light'] {
+  color-scheme: light;
+
+  --text: #3a4538;
+  --text-muted: #5f6d5a;
+  --text-soft: #728070;
+  --text-label: #6b7968;
+  --text-strong: #2a3328;
+
+  --bg-top: #faf6ee;
+  --bg-bottom: #e8efe0;
+  --surface: rgba(252, 249, 242, 0.94);
+  --surface-solid: #f3ede3;
+  --surface-input: #fffdf8;
+  --border: rgba(120, 140, 95, 0.22);
+  --border-strong: rgba(100, 130, 85, 0.28);
+
+  --accent: #6b9e78;
+  --accent-border: #5a8f68;
+  --accent-soft: rgba(107, 158, 120, 0.16);
+  --accent-text: #3d6b4a;
+
+  --viewport-top: rgba(232, 241, 224, 0.98);
+  --viewport-bottom: rgba(216, 230, 206, 0.98);
+  --hint-bg: rgba(255, 253, 248, 0.88);
+
+  --success-bg: rgba(107, 158, 120, 0.18);
+  --success-text: #3d6b4a;
+  --error-bg: rgba(196, 92, 72, 0.12);
+  --error-text: #9c3d2e;
+  --warn-text: #a66b00;
+  --warn-list: #7a5520;
+  --danger-icon: #b84a3a;
+  --row-hover: rgba(107, 158, 120, 0.1);
+}
+
+html {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: var(--text);
+  background: var(--bg-bottom);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+body {
+  background: radial-gradient(circle at top, var(--bg-top) 0%, var(--bg-bottom) 55%);
+}
+
+button,
+select,
+input {
+  font: inherit;
+}

@@ -1,0 +1,437 @@
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react'
+import type { NavPlanSnapshot, PrintScheduleDocument, ScheduleDocument } from '../types/documents'
+import type { PlanningStore } from '../types/planning'
+import type { ScheduleData, ScheduleEntry } from '../types/schedule'
+import {
+  deleteNavPlanSnapshot,
+  deletePrintSchedule,
+  deleteScheduleDocument,
+  listNavPlanSnapshots,
+  listPrintSchedules,
+  listScheduleDocuments,
+  loadNavPlanSnapshot,
+  loadPrintSchedule,
+  loadScheduleDocument,
+  saveNavPlanSnapshot,
+  savePrintSchedule,
+  saveScheduleDocument,
+} from '../storage/documentStorage'
+import {
+  loadPlanningFromCloud,
+  loadPlanningStore,
+  savePlanningStore,
+  savePlanningToCloud,
+} from '../storage/planningStorage'
+import { loadGeneratedSchedule, saveGeneratedSchedule } from '../storage/scheduleStorage'
+import { buildSpringScheduleAsync, type ScheduleBuildProgress, type SpringScheduleResult } from '../scheduler/springScheduler'
+import { enrichEntries } from '../utils/conflicts'
+import { syncPlanningGroupsFromNavPlan } from '../utils/groupDefaults'
+import { newId } from '../utils/normalize'
+import { buildPrintWeekRows, downloadJsonFile, printScheduleDocumentHtml } from '../utils/schedulePrintExport'
+import {
+  applyNavPlanImport,
+  buildNavPlanExport,
+  exportNavPlanDocumentFile,
+  parseNavPlanImport,
+  snapshotToExportDocument,
+} from '../utils/navPlanJsonExchange'
+import { ensureEditorName } from '../storage/editorIdentity'
+
+export type ScheduleBuildState = {
+  running: boolean
+  progress: number
+  stage: string
+  detail: string | null
+  lastResult: SpringScheduleResult | null
+  error: string | null
+}
+
+const idleBuildState: ScheduleBuildState = {
+  running: false,
+  progress: 0,
+  stage: '',
+  detail: null,
+  lastResult: null,
+  error: null,
+}
+
+type PlanningContextValue = {
+  store: PlanningStore
+  setStore: React.Dispatch<React.SetStateAction<PlanningStore>>
+  schedule: ScheduleData | null
+  scheduleEdited: boolean
+  scheduleBuild: ScheduleBuildState
+  generateSpringSchedule: () => Promise<SpringScheduleResult | null>
+  updateScheduleEntry: (entryId: string, patch: Partial<ScheduleEntry>) => void
+  saveCurrentSchedule: (label?: string, note?: string) => Promise<ScheduleDocument | null>
+  loadScheduleVersion: (id: string) => Promise<void>
+  listScheduleVersions: () => Promise<ScheduleDocument[]>
+  deleteScheduleVersion: (id: string) => Promise<void>
+  saveNavPlanVersion: (label: string, note?: string) => Promise<NavPlanSnapshot>
+  restoreNavPlanVersion: (id: string) => Promise<void>
+  listNavPlanVersions: () => Promise<NavPlanSnapshot[]>
+  deleteNavPlanVersion: (id: string) => Promise<void>
+  exportCurrentNavPlanJson: (label?: string, note?: string) => void
+  importNavPlanJson: (file: File) => Promise<void>
+  savePrintScheduleView: (
+    kind: 'group' | 'teacher',
+    targetName: string,
+    title: string,
+    entries: ScheduleEntry[],
+    note?: string,
+  ) => Promise<PrintScheduleDocument>
+  listPrintScheduleViews: (kind?: 'group' | 'teacher') => Promise<PrintScheduleDocument[]>
+  deletePrintScheduleView: (id: string) => Promise<void>
+  printSavedSchedule: (id: string) => Promise<void>
+  saveLocal: () => void
+  loadCloud: () => Promise<void>
+  saveCloud: () => Promise<void>
+  cloudEnabled: boolean
+  status: string | null
+  setStatus: (message: string | null) => void
+}
+
+const PlanningContext = createContext<PlanningContextValue | null>(null)
+
+function scheduleStats(schedule: ScheduleData) {
+  const enriched = enrichEntries(schedule.entries)
+  return {
+    groups: schedule.groups.length,
+    entries: schedule.entries.length,
+    conflicts: enriched.filter((entry) => entry.conflict !== 'none').length,
+  }
+}
+
+export function PlanningProvider({ children }: { children: ReactNode }) {
+  const [store, setStore] = useState<PlanningStore>(() => loadPlanningStore())
+  const [schedule, setSchedule] = useState<ScheduleData | null>(() => loadGeneratedSchedule())
+  const [scheduleEdited, setScheduleEdited] = useState(false)
+  const [scheduleBuild, setScheduleBuild] = useState<ScheduleBuildState>(idleBuildState)
+  const [status, setStatus] = useState<string | null>(null)
+  const cloudEnabled = Boolean(import.meta.env.VITE_SHEETS_API_URL)
+  const skipAutoSave = useRef(true)
+
+  useEffect(() => {
+    if (skipAutoSave.current) {
+      skipAutoSave.current = false
+      return
+    }
+    const timer = window.setTimeout(() => {
+      savePlanningStore(store)
+    }, 500)
+    return () => window.clearTimeout(timer)
+  }, [store])
+
+  const persistSchedule = useCallback((next: ScheduleData, edited: boolean) => {
+    setSchedule(next)
+    setScheduleEdited(edited)
+    saveGeneratedSchedule(next)
+  }, [])
+
+  const generateSpringSchedule = useCallback(async () => {
+    if (scheduleBuild.running) return null
+
+    setScheduleBuild({
+      running: true,
+      progress: 0,
+      stage: 'Запуск…',
+      detail: null,
+      lastResult: null,
+      error: null,
+    })
+    setStatus('Збираємо весняний розклад…')
+
+    const onProgress = (p: ScheduleBuildProgress) => {
+      setScheduleBuild((current) => ({
+        ...current,
+        running: true,
+        progress: p.percent,
+        stage: p.stage,
+        detail: p.detail ?? null,
+      }))
+      setStatus(p.detail ? `${p.stage} · ${p.detail}` : p.stage)
+    }
+
+    try {
+      const syncedStore = syncPlanningGroupsFromNavPlan(store)
+      const result = await buildSpringScheduleAsync(syncedStore, onProgress)
+      setStore(syncedStore)
+      savePlanningStore(syncedStore)
+      persistSchedule(result.schedule, false)
+      setScheduleBuild({
+        running: false,
+        progress: 100,
+        stage: 'Готово',
+        detail: `${result.placed} з ${result.requested} пар`,
+        lastResult: result,
+        error: null,
+      })
+      setStatus(
+        result.unplaced.length
+          ? `Готово: ${result.placed} з ${result.requested} пар · ${result.unplaced.length} не вмістилось`
+          : `Готово: ${result.placed} пар · ${syncedStore.groups.length} груп`,
+      )
+      return result
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Помилка збірки розкладу'
+      setScheduleBuild({
+        running: false,
+        progress: 0,
+        stage: 'Помилка',
+        detail: message,
+        lastResult: null,
+        error: message,
+      })
+      setStatus(message)
+      return null
+    }
+  }, [store, scheduleBuild.running, persistSchedule])
+
+  const updateScheduleEntry = useCallback(
+    (entryId: string, patch: Partial<ScheduleEntry>) => {
+      setSchedule((current) => {
+        if (!current) return current
+        const next: ScheduleData = {
+          ...current,
+          entries: current.entries.map((entry) => (entry.id === entryId ? { ...entry, ...patch } : entry)),
+        }
+        saveGeneratedSchedule(next)
+        setScheduleEdited(true)
+        return next
+      })
+    },
+    [],
+  )
+
+  const saveCurrentSchedule = useCallback(async (label?: string, note?: string) => {
+    if (!schedule) return null
+    const resolvedLabel =
+      label?.trim() ||
+      window.prompt('Назва збереженого розкладу:', `Розклад ${new Date().toLocaleDateString('uk-UA')}`)?.trim() ||
+      `Розклад ${new Date().toLocaleDateString('uk-UA')}`
+    const resolvedNote =
+      note !== undefined
+        ? note.trim() || undefined
+        : window.prompt('Примітка (необовʼязково):', '')?.trim() || undefined
+    const doc = await saveScheduleDocument(schedule, resolvedLabel, {
+      note: resolvedNote,
+      edited: scheduleEdited,
+      stats: scheduleStats(schedule),
+    })
+    setStatus(`Розклад збережено: ${doc.label}`)
+    return doc
+  }, [schedule, scheduleEdited])
+
+  const loadScheduleVersion = useCallback(
+    async (id: string) => {
+      const doc = await loadScheduleDocument(id)
+      if (!doc) {
+        setStatus('Версію розкладу не знайдено')
+        return
+      }
+      persistSchedule(doc.schedule, doc.edited)
+      setStatus(`Завантажено розклад «${doc.label}» · ${doc.savedBy}`)
+    },
+    [persistSchedule],
+  )
+
+  const saveNavPlanVersion = useCallback(
+    async (label: string, note?: string) => {
+      const snapshot = await saveNavPlanSnapshot(store, label, note)
+      setStatus(`Навплан збережено: v${snapshot.version} · ${snapshot.label}`)
+      return snapshot
+    },
+    [store],
+  )
+
+  const restoreNavPlanVersion = useCallback(async (id: string) => {
+    const snapshot = await loadNavPlanSnapshot(id)
+    if (!snapshot) {
+      setStatus('Версію навплану не знайдено')
+      return
+    }
+    const next: PlanningStore = {
+      ...store,
+      ...snapshot.payload,
+      navPlan: snapshot.payload.navPlan.map((row) => ({ ...row })),
+    }
+    setStore(next)
+    savePlanningStore(next)
+    setStatus(`Завантажено навплан v${snapshot.version} · ${snapshot.label} (${snapshot.savedBy})`)
+  }, [store])
+
+  const exportCurrentNavPlanJson = useCallback(
+    (label?: string, note?: string) => {
+      if (store.navPlan.length === 0) {
+        setStatus('Немає даних навплану для експорту')
+        return
+      }
+      const doc = buildNavPlanExport(store, { label, note })
+      exportNavPlanDocumentFile(doc)
+      setStatus(
+        `Експорт JSON · ${doc.rowCount} рядків · ${doc.savedBy} · ${new Date(doc.savedAt).toLocaleString('uk-UA')}`,
+      )
+    },
+    [store],
+  )
+
+  const importNavPlanJson = useCallback(
+    async (file: File) => {
+      const text = await file.text()
+      let parsed: unknown
+      try {
+        parsed = JSON.parse(text)
+      } catch {
+        throw new Error('Файл не є коректним JSON')
+      }
+      const doc = parseNavPlanImport(parsed)
+      if (doc.payload.navPlan.length === 0) throw new Error('У JSON немає рядків навплану')
+      const next = applyNavPlanImport(store, doc)
+      setStore(next)
+      savePlanningStore(next)
+      setStatus(
+        `Імпорт JSON · ${doc.rowCount} рядків · «${doc.label}» · ${doc.savedBy} · ${new Date(doc.savedAt).toLocaleString('uk-UA')}`,
+      )
+    },
+    [store],
+  )
+
+  const savePrintScheduleView = useCallback(
+    async (
+      kind: 'group' | 'teacher',
+      targetName: string,
+      title: string,
+      entries: ScheduleEntry[],
+      note?: string,
+    ) => {
+      if (!schedule) throw new Error('Немає активного розкладу')
+      const doc: PrintScheduleDocument = {
+        id: newId('prt'),
+        kind,
+        targetName,
+        title,
+        savedAt: new Date().toISOString(),
+        savedBy: ensureEditorName(),
+        note: note?.trim() || undefined,
+        meta: schedule.meta,
+        entries: structuredClone(entries),
+        weeks: buildPrintWeekRows(entries, schedule.groups, schedule.meta, kind),
+      }
+      await savePrintSchedule(doc)
+      setStatus(`Збережено для друку: ${title}`)
+      return doc
+    },
+    [schedule],
+  )
+
+  const printSavedSchedule = useCallback(async (id: string) => {
+    const doc = await loadPrintSchedule(id)
+    if (!doc) {
+      setStatus('Друковану версію не знайдено')
+      return
+    }
+    printScheduleDocumentHtml(doc)
+  }, [])
+
+  const saveLocal = useCallback(() => {
+    savePlanningStore(store)
+    setStatus('Збережено локально')
+  }, [store])
+
+  const loadCloud = useCallback(async () => {
+    const remote = await loadPlanningFromCloud()
+    if (remote) {
+      setStore(remote)
+      savePlanningStore(remote)
+      setStatus('Завантажено з хмари')
+    }
+  }, [])
+
+  const saveCloud = useCallback(async () => {
+    await savePlanningToCloud(store)
+    savePlanningStore(store)
+    setStatus('Збережено в хмарі')
+  }, [store])
+
+  const value = useMemo(
+    () => ({
+      store,
+      setStore,
+      schedule,
+      scheduleEdited,
+      scheduleBuild,
+      generateSpringSchedule,
+      updateScheduleEntry,
+      saveCurrentSchedule,
+      loadScheduleVersion: loadScheduleVersion,
+      listScheduleVersions: listScheduleDocuments,
+      deleteScheduleVersion: deleteScheduleDocument,
+      saveNavPlanVersion,
+      restoreNavPlanVersion,
+      listNavPlanVersions: listNavPlanSnapshots,
+      deleteNavPlanVersion: deleteNavPlanSnapshot,
+      exportCurrentNavPlanJson,
+      importNavPlanJson,
+      savePrintScheduleView,
+      listPrintScheduleViews: listPrintSchedules,
+      deletePrintScheduleView: deletePrintSchedule,
+      printSavedSchedule,
+      saveLocal,
+      loadCloud,
+      saveCloud,
+      cloudEnabled,
+      status,
+      setStatus,
+    }),
+    [
+      store,
+      schedule,
+      scheduleEdited,
+      scheduleBuild,
+      generateSpringSchedule,
+      updateScheduleEntry,
+      saveCurrentSchedule,
+      loadScheduleVersion,
+      saveNavPlanVersion,
+      restoreNavPlanVersion,
+      exportCurrentNavPlanJson,
+      importNavPlanJson,
+      savePrintScheduleView,
+      printSavedSchedule,
+      saveLocal,
+      loadCloud,
+      saveCloud,
+      cloudEnabled,
+      status,
+    ],
+  )
+
+  return <PlanningContext.Provider value={value}>{children}</PlanningContext.Provider>
+}
+
+export function usePlanning() {
+  const ctx = useContext(PlanningContext)
+  if (!ctx) throw new Error('usePlanning поза PlanningProvider')
+  return ctx
+}
+
+export function exportNavPlanSnapshotJson(snapshot: NavPlanSnapshot) {
+  exportNavPlanDocumentFile(snapshotToExportDocument(snapshot))
+}
+
+export function exportScheduleDocumentJson(doc: ScheduleDocument) {
+  downloadJsonFile(doc, `schedule-${doc.label.replace(/\s+/g, '_')}.json`)
+}
+
+export function exportPrintScheduleJson(doc: PrintScheduleDocument) {
+  downloadJsonFile(doc, `print-${doc.kind}-${doc.targetName.replace(/\s+/g, '_')}.json`)
+}
