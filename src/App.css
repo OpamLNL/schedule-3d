@@ -816,13 +816,93 @@
 }
 
 .filter-inline input,
-.filter-inline select {
+.filter-inline select,
+.teacher-combobox input {
   padding: 8px 10px;
   border-radius: 8px;
   border: 1px solid var(--border-strong);
   background: var(--surface-input);
   color: var(--text-strong);
   min-width: 120px;
+}
+
+.teacher-combobox {
+  position: relative;
+  width: 100%;
+}
+
+.teacher-combobox input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.teacher-combobox-list {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 220px;
+  overflow: auto;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  border-radius: 8px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-panel, var(--surface-input));
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.teacher-combobox-list-portal {
+  position: fixed;
+  z-index: 10000;
+  right: auto;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+}
+
+.teacher-combobox-list button {
+  display: block;
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-strong);
+  text-align: left;
+  cursor: pointer;
+}
+
+.teacher-combobox-list button:hover,
+.teacher-combobox-list button:focus-visible {
+  background: var(--surface-muted, rgba(127, 127, 127, 0.12));
+}
+
+.teacher-combobox-empty {
+  padding: 8px 10px;
+  color: var(--text-soft);
+  font-size: 0.82rem;
+}
+
+.teacher-combobox-head {
+  padding: 6px 10px 4px;
+  color: var(--text-soft);
+  font-size: 0.78rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2px;
+}
+
+.teacher-source-hint {
+  margin: 0 0 12px;
+}
+
+.link-btn {
+  border: 0;
+  padding: 0;
+  background: none;
+  color: var(--accent, #2563eb);
+  text-decoration: underline;
+  cursor: pointer;
+  font: inherit;
 }
 
 .data-table input,
@@ -834,7 +914,16 @@
   color: var(--text-strong);
   width: 100%;
   min-width: 0;
+  max-width: 100%;
   box-sizing: border-box;
+}
+
+.teacher-prefs-table,
+.subject-prefs-table,
+.room-rules-table {
+  table-layout: fixed;
+  width: max-content;
+  max-width: 100%;
 }
 
 .data-table .col-num {
@@ -1048,6 +1137,15 @@
 
 .nav-plan-filters .filter-search input {
   min-width: 140px;
+}
+
+.table-text-filters {
+  margin-bottom: 12px;
+}
+
+.filter-count {
+  margin: 0 0 10px;
+  font-size: 0.82rem;
 }
 
 .nav-plan-scroll {
@@ -1502,5 +1600,78 @@
 
   .cylinder-viewport .scene-canvas {
     min-height: 520px;
+  }
+}
+
+.batch-export-panel h3 {
+  margin: 0 0 10px;
+  font-size: 0.92rem;
+}
+
+.batch-export-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.batch-export-block {
+  display: grid;
+  gap: 10px;
+}
+
+.batch-export-location,
+.batch-export-scope,
+.batch-export-formats {
+  display: grid;
+  gap: 8px;
+}
+
+.batch-export-location-actions,
+.batch-export-groups-actions,
+.batch-export-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.batch-export-hint {
+  margin: 0;
+  font-size: 0.82rem;
+}
+
+.batch-export-groups {
+  display: grid;
+  gap: 8px;
+}
+
+.batch-export-group-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
+  gap: 6px;
+  max-height: 220px;
+  overflow: auto;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+.batch-export-group-item {
+  margin: 0;
+}
+
+.batch-export-result {
+  color: var(--text-strong);
+  font-size: 0.88rem;
+}
+
+.radio-row.disabled {
+  opacity: 0.55;
+}
+
+@media (max-width: 900px) {
+  .batch-export-grid {
+    grid-template-columns: 1fr;
   }
 }

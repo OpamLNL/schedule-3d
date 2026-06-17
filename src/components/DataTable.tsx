@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { TeacherCombobox } from './TeacherCombobox'
 
 type Column<T> = {
   key: keyof T | string
@@ -7,8 +8,12 @@ type Column<T> = {
   className?: string
   render?: (row: T, index: number) => ReactNode
   editable?: boolean
-  inputType?: 'text' | 'number' | 'select'
+  inputType?: 'text' | 'number' | 'select' | 'datalist'
   options?: { value: string; label: string }[]
+  datalistOptions?: string[]
+  comboboxPlaceholder?: string
+  comboboxEmptyHint?: string
+  comboboxSearchMode?: 'teacher' | 'text'
 }
 
 type DataTableProps<T extends { id: string }> = {
@@ -17,6 +22,7 @@ type DataTableProps<T extends { id: string }> = {
   onChange: (id: string, key: keyof T, value: string | number) => void
   onDelete?: (id: string) => void
   emptyText?: string
+  tableClassName?: string
 }
 
 export function DataTable<T extends { id: string }>({
@@ -25,6 +31,7 @@ export function DataTable<T extends { id: string }>({
   onChange,
   onDelete,
   emptyText = 'Немає рядків',
+  tableClassName,
 }: DataTableProps<T>) {
   if (rows.length === 0) {
     return <p className="muted table-empty">{emptyText}</p>
@@ -32,14 +39,14 @@ export function DataTable<T extends { id: string }>({
 
   return (
     <div className="table-wrap">
-      <table className="data-table">
+      <table className={tableClassName ? `data-table ${tableClassName}` : 'data-table'}>
         <thead>
           <tr>
             {columns.map((col) => (
               <th
                 key={String(col.key)}
                 className={col.className}
-                style={col.width ? { width: col.width } : undefined}
+                style={col.width ? { width: col.width, maxWidth: col.width } : undefined}
               >
                 {col.title}
               </th>
@@ -52,9 +59,10 @@ export function DataTable<T extends { id: string }>({
             <tr key={row.id}>
               {columns.map((col) => {
                 const key = col.key as keyof T
+                const cellStyle = col.width ? { width: col.width, maxWidth: col.width } : undefined
                 if (col.render) {
                   return (
-                    <td key={String(col.key)} className={col.className}>
+                    <td key={String(col.key)} className={col.className} style={cellStyle}>
                       {col.render(row, index)}
                     </td>
                   )
@@ -62,14 +70,14 @@ export function DataTable<T extends { id: string }>({
                 const value = row[key]
                 if (!col.editable) {
                   return (
-                    <td key={String(col.key)} className={col.className}>
+                    <td key={String(col.key)} className={col.className} style={cellStyle}>
                       {String(value ?? '')}
                     </td>
                   )
                 }
                 if (col.inputType === 'select' && col.options) {
                   return (
-                    <td key={String(col.key)} className={col.className}>
+                    <td key={String(col.key)} className={col.className} style={cellStyle}>
                       <select
                         value={String(value ?? '')}
                         onChange={(e) => onChange(row.id, key, e.target.value)}
@@ -83,8 +91,22 @@ export function DataTable<T extends { id: string }>({
                     </td>
                   )
                 }
+                if (col.inputType === 'datalist' && col.datalistOptions) {
+                  return (
+                    <td key={String(col.key)} className={col.className} style={cellStyle}>
+                      <TeacherCombobox
+                        value={value === undefined || value === null ? '' : String(value)}
+                        options={col.datalistOptions}
+                        placeholder={col.comboboxPlaceholder}
+                        emptyHint={col.comboboxEmptyHint}
+                        searchMode={col.comboboxSearchMode}
+                        onChange={(next) => onChange(row.id, key, next)}
+                      />
+                    </td>
+                  )
+                }
                 return (
-                  <td key={String(col.key)} className={col.className}>
+                  <td key={String(col.key)} className={col.className} style={cellStyle}>
                     <input
                       type={col.inputType === 'number' ? 'number' : 'text'}
                       value={value === undefined || value === null ? '' : String(value)}

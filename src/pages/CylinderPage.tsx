@@ -37,6 +37,7 @@ export function CylinderPage() {
     listPrintScheduleViews,
     deletePrintScheduleView,
     printSavedSchedule,
+    printScheduleView,
   } = usePlanning()
   const data = (generatedSchedule ?? demoSchedule) as ScheduleData
   const isGenerated = Boolean(generatedSchedule)
@@ -154,6 +155,26 @@ export function CylinderPage() {
     await refreshPrintDocs()
   }
 
+  const printCurrentView = () => {
+    if (teacherProjection) {
+      printScheduleView(
+        'teacher',
+        teacherProjection.teacher,
+        teacherProjection.teacher,
+        teacherProjection.entries,
+      )
+      return
+    }
+    if (groupProjection) {
+      printScheduleView(
+        'group',
+        groupProjection.group.code,
+        `Група ${groupProjection.group.code}`,
+        groupProjection.entries,
+      )
+    }
+  }
+
   return (
     <div className="cylinder-layout">
       <header className="app-header cylinder-header">
@@ -229,6 +250,9 @@ export function CylinderPage() {
 
           {teacherProjection || groupProjection ? (
             <div className="cylinder-print-actions">
+              <button type="button" className="btn primary" onClick={printCurrentView}>
+                Друкувати
+              </button>
               <button type="button" className="btn" onClick={() => void saveCurrentPrintView()}>
                 Зберегти для друку
               </button>

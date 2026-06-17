@@ -1,0 +1,16 @@
+Закон України від 19.06.2019 № 2745-VIII «Про фахову передвищу освіту» // Верховна Рада України. Законодавство України. URL: https://zakon.rada.gov.ua/laws/show/2745-19 (дата звернення: 17.06.2026).
+Болюбаш Я. Я. Організація навчального процесу у вищих закладах освіти : навч. посіб. К., 1997. 64 с. URL: https://duikt.edu.ua/ua/lib/2/category/883/view/890 (дата звернення: 17.06.2026).
+Schaerf A. A Survey of Automated Timetabling. Artificial Intelligence Review. 1999. Vol. 13. P. 87–127. DOI: https://doi.org/10.1023/A:1006576209967 (дата звернення: 17.06.2026).
+Burke E., Petrovic S. Recent research directions in automated timetabling. European Journal of Operational Research. 2002. Vol. 140, iss. 2. P. 266–280. DOI: https://doi.org/10.1016/S0377-2217(02)00069-3 (дата звернення: 17.06.2026).
+Ware C. Information Visualization: Perception for Design. 3rd ed. Burlington : Morgan Kaufmann, 2012. 536 p. URL: https://www.oreilly.com/library/view/information-visualization-3rd/9780123814647/ (date of access: 17.06.2026).
+aSc Timetables : school scheduling software. aSc Applied Software Consultants. URL: https://www.asctimetables.com/ (дата звернення: 17.06.2026).
+FET – Free Timetabling Software. URL: https://lalescu.ro/liviu/fet/ (дата звернення: 17.06.2026).
+UniTime : comprehensive educational scheduling system. URL: https://www.unitime.org/ (дата звернення: 17.06.2026).
+React : the library for web and native user interfaces : офіц. док. React Team, Meta. URL: https://18.react.dev/ (дата звернення: 17.06.2026).
+TypeScript : official documentation. Microsoft. URL: https://www.typescriptlang.org/docs/ (дата звернення: 17.06.2026).
+Vite : next generation frontend tooling : офіц. док. URL: https://vite.dev/ (дата звернення: 17.06.2026).
+Three.js : JavaScript 3D library : офіц. док. URL: https://threejs.org/docs/ (дата звернення: 17.06.2026).
+React Three Fiber : docs. Poimandres Collective. URL: https://docs.pmnd.rs/react-three-fiber/getting-started/introduction (дата звернення: 17.06.2026).
+SheetJS : SheetJS Community Edition documentation. URL: https://docs.sheetjs.com/ (дата звернення: 17.06.2026).
+IndexedDB API : MDN Web Docs. Mozilla Foundation. URL: https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API (дата звернення: 17.06.2026).
+WebGL: 2D and 3D graphics for the web : MDN Web Docs. Mozilla Foundation. URL: https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API (дата звернення: 17.06.2026).

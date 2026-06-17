@@ -10,6 +10,14 @@ import {
   type ScheduleEntryCluster,
 } from '../utils/scheduleClusters'
 import { slotAngle, slotToDayPeriod } from '../utils/slots'
+import {
+  CELL_DEPTH,
+  CELL_WIDTH,
+  CYLINDER_RADIUS,
+  LAYER_GAP,
+  LAYER_HEIGHT,
+  computeCylinderLayout,
+} from '../utils/scheduleCylinderLayout'
 import { TimeSlotRing } from './TimeSlotRing'
 import { CylinderSurfaceGrid } from './CylinderSurfaceGrid'
 
@@ -27,12 +35,6 @@ type ScheduleCylinderProps = {
     groups: Group[]
   } | null
 }
-
-const CYLINDER_RADIUS = 4.2
-const LAYER_HEIGHT = 0.72
-const LAYER_GAP = 0.12
-const CELL_DEPTH = 0.28
-const CELL_WIDTH = 0.34
 
 function worstConflict(entries: EnrichedEntry[]): ConflictKind {
   if (entries.some((entry) => entry.conflict === 'teacher')) return 'teacher'
@@ -65,11 +67,11 @@ export function ScheduleCylinder({
     return map
   }, [groups, entries])
 
-  const totalHeight = groups.length * (LAYER_HEIGHT + LAYER_GAP)
-  const baseY = -totalHeight / 2
+  const layout = useMemo(() => computeCylinderLayout(groups.length), [groups.length])
+  const { baseY, totalHeight, orbitPivotY } = layout
 
   return (
-    <group>
+    <group position={[0, -orbitPivotY, 0]}>
       <CylinderSurfaceGrid
         meta={meta}
         groupCount={groups.length}

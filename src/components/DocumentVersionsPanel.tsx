@@ -26,6 +26,9 @@ type DocumentVersionsPanelProps =
       onLoad: (id: string) => Promise<void>
       onDelete: (id: string) => Promise<void>
       onExport: (item: ScheduleItem) => void
+      onImport: (file: File) => Promise<void>
+      onExportCurrent?: (label: string, note: string) => void
+      canExportCurrent?: boolean
     }
   | {
       kind: 'print'
@@ -67,7 +70,7 @@ export function DocumentVersionsPanel(props: DocumentVersionsPanelProps) {
 
   const handleImportFile = useCallback(
     async (file: File | undefined) => {
-      if (!file || props.kind !== 'navPlan') return
+      if (!file || (props.kind !== 'navPlan' && props.kind !== 'schedule')) return
       setBusy(true)
       try {
         await props.onImport(file)
@@ -127,6 +130,33 @@ export function DocumentVersionsPanel(props: DocumentVersionsPanelProps) {
                 </button>
               </>
             ) : null}
+            {props.kind === 'schedule' ? (
+              <>
+                <button
+                  type="button"
+                  className="btn"
+                  disabled={busy || props.canExportCurrent === false}
+                  onClick={() => props.onExportCurrent?.(label, note)}
+                >
+                  Експорт JSON
+                </button>
+                <input
+                  ref={importRef}
+                  type="file"
+                  accept=".json,application/json"
+                  hidden
+                  onChange={(e) => void handleImportFile(e.target.files?.[0])}
+                />
+                <button
+                  type="button"
+                  className="btn"
+                  disabled={busy}
+                  onClick={() => importRef.current?.click()}
+                >
+                  Імпорт JSON
+                </button>
+              </>
+            ) : null}
           </div>
         ) : null}
       </div>
@@ -135,6 +165,12 @@ export function DocumentVersionsPanel(props: DocumentVersionsPanelProps) {
         <p className="muted document-versions-hint">
           JSON містить <code>savedBy</code>, <code>savedAt</code>, назву та дані навплану. Імпорт завантажує файл у
           поточну таблицю.
+        </p>
+      ) : null}
+      {props.kind === 'schedule' ? (
+        <p className="muted document-versions-hint">
+          Підтримуються <code>schedule-full.json</code> з пакетного експорту, збережені версії та JSON поточного
+          розкладу. Після імпорту розклад одразу доступний у 3D і для друку.
         </p>
       ) : null}
 
@@ -169,8 +205,8 @@ export function DocumentVersionsPanel(props: DocumentVersionsPanelProps) {
                   </button>
                 ) : null}
                 {props.kind === 'print' ? (
-                  <button type="button" className="btn" onClick={() => props.onPrint(item)}>
-                    Друк
+                  <button type="button" className="btn primary" onClick={() => props.onPrint(item)}>
+                    Друкувати
                   </button>
                 ) : null}
                 {props.kind !== 'print' ? (

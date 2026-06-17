@@ -1,10 +1,8 @@
 import { useMemo } from 'react'
 import { BufferGeometry, Float32BufferAttribute } from 'three'
 import type { ScheduleMeta } from '../types/schedule'
+import { LAYER_GAP, LAYER_HEIGHT } from '../utils/scheduleCylinderLayout'
 import { slotAngle } from '../utils/slots'
-
-const LAYER_HEIGHT = 0.72
-const LAYER_GAP = 0.12
 
 type CylinderSurfaceGridProps = {
   meta: ScheduleMeta

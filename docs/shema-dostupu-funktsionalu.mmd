@@ -1,0 +1,51 @@
+flowchart TB
+  ROOT["Програмний продукт «3D Розклад коледжу»"]
+
+  ROOT --> NAV["Навігація вкладками (#/…)"]
+  ROOT --> STORE["Збереження та обмін даними"]
+  ROOT --> GLOBAL["Загальні елементи інтерфейсу"]
+
+  NAV --> P1["Навплан (#/nav)"]
+  NAV --> P2["Групи (#/groups)"]
+  NAV --> P3["Викладачі (#/teacherPrefs)"]
+  NAV --> P4["Аудиторії (#/rooms)"]
+  NAV --> P5["Розклад (#/schedule)"]
+  NAV --> P6["3D циліндр (#/cylinder)"]
+
+  P3 --> P3S["Преференції предметів (#/subjectPrefs)\nперехід з «Викладачі»"]
+
+  P1 --> P1A["Імпорт Excel → IndexedDB + таблиця"]
+  P1 --> P1B["Редагування / фільтри / класифікація"]
+  P1 --> P1C["Версії навплану (IndexedDB)"]
+  P1 --> P1D["JSON експорт / імпорт"]
+
+  P5 --> P5A["Автозбірка весняного розкладu"]
+  P5 --> P5B["Активний розклад (localStorage)"]
+  P5 --> P5C["Збережені розклади (IndexedDB)"]
+  P5 --> P5D["Пакетний експорт HTML/JSON"]
+  P5 --> P5E["JSON експорт / імпорт розкладu"]
+
+  P6 --> P6A["3D-сцена та фільтри"]
+  P6 --> P6B["Тижнева проєкція викладача/групи"]
+  P6 --> P6C["Друк і збереження для друку (IndexedDB)"]
+
+  STORE --> LS["localStorage"]
+  STORE --> IDB["IndexedDB schedule3d-files-v1"]
+  STORE --> FILES["Файли на диску (завантаження браузера)"]
+
+  LS --> LS1["schedule3d-planning-v1\nнавплан + довідники"]
+  LS --> LS2["schedule3d-spring-v1\nпоточний розклад"]
+  LS --> LS3["schedule3d-cylinder-filters-v1"]
+  LS --> LS4["schedule3d-editor-name"]
+  LS --> LS5["schedule3d-export-location-v1"]
+  LS --> LS6["schedule3d-theme"]
+
+  IDB --> IDB1["navPlanSource — копія Excel"]
+  IDB --> IDB2["navPlanSnapshots — версії"]
+  IDB --> IDB3["scheduleDocuments — версії розкладu"]
+  IDB --> IDB4["printSchedules — знімки для друку"]
+  IDB --> IDB5["exportDirectoryHandle — папка експорту"]
+
+  GLOBAL --> G1["Перемикач теми"]
+  GLOBAL --> G2["Рядок статусу"]
+  GLOBAL --> G3["Кнопка «Зберегти» (довідники)"]

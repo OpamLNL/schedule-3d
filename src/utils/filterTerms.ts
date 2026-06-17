@@ -32,3 +32,9 @@ export function matchesAnyTerm<T>(
   if (terms.length === 0) return true
   return terms.some((term) => matcher(item, term))
 }
+
+export function filterTextOptions(options: string[], query: string, limit = 40): string[] {
+  const q = query.trim()
+  const filtered = q ? options.filter((opt) => matchesAnyText(opt, q)) : options
+  return filtered.slice(0, limit)
+}

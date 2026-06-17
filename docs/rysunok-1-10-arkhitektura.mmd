@@ -1,0 +1,45 @@
+%% Архітектура програмного засобу (шарова модель)
+%% Рисунок 1.10 — Архітектура вебзастосунку
+
+flowchart TB
+    subgraph UI["Шар користувацького інтерфейсу"]
+        P1[Сторінки навплану, розкладу, 3D]
+        P2[Компоненти таблиць і фільтрів]
+        P3[3Dсцена циліндра]
+    end
+
+    subgraph BL["Шар бізнеслогіки"]
+        L1[Парсинг і нормалізація Excel]
+        L2[Алгоритм автозбірки розкладу]
+        L3[Перевірка накладок і фільтри]
+    end
+
+    subgraph DL["Шар даних"]
+        D1[(localStorage)]
+        D2[(IndexedDB)]
+        D3[Імпорт .xlsx]
+    end
+
+    subgraph EXT["Зовнішні сервіси (опційно)"]
+        E1[Google Sheets API]
+    end
+
+    P1 --> L1
+    P1 --> L2
+    P2 --> L3
+    P3 --> L3
+    L1 --> D3
+    L1 --> D1
+    L2 --> D1
+    L3 --> D2
+    D1 <-->|"синхронізація"| E1
+
+    classDef ui fill:#dbeafe,stroke:#1d4ed8
+    classDef bl fill:#fef3c7,stroke:#b45309
+    classDef dl fill:#ecfdf5,stroke:#047857
+    classDef ext fill:#f1f5f9,stroke:#64748b
+
+    class P1,P2,P3 ui
+    class L1,L2,L3 bl
+    class D1,D2,D3 dl
+    class E1 ext

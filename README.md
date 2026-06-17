@@ -80,15 +80,54 @@ scripts/
 
 ## Публікація на GitHub
 
-Репозиторій Git — у **кореневій** папці дипломного проєкту (не всередині `schedule-3d/`).
+Репозиторій: **https://github.com/OpamLNL/schedule-3d**
 
 ```bash
-# з кореня проєкту (батьківська папка schedule-3d)
-git remote add origin https://github.com/USER/REPO.git
-git push -u origin main
+cd schedule-3d
+git add .
+git commit -m "Оновлення застосунку"
+git push origin main
 ```
 
-> Не комітьте `.env`, `node_modules/` та `dist/` — вони вже в `.gitignore`.
+> Не комітьте `.env`, `node_modules/`, `dist/` та `.vercel/` — вони в `.gitignore`.
+
+## Деплой на Vercel (з GitHub)
+
+1. Зайдіть на [vercel.com](https://vercel.com) → **Add New… → Project**.
+2. **Import** репозиторій `OpamLNL/schedule-3d` (GitHub має бути підключений до Vercel).
+3. Налаштування (зазвичай підтягуються з `vercel.json` автоматично):
+
+   | Поле | Значення |
+   |------|----------|
+   | Framework Preset | Vite |
+   | Root Directory | `.` (корінь репо) |
+   | Build Command | `yarn build` |
+   | Output Directory | `dist` |
+   | Install Command | `yarn install --frozen-lockfile` |
+
+4. **Environment Variables** (необовʼязково, лише для хмари):
+
+   | Name | Value |
+   |------|-------|
+   | `VITE_SHEETS_API_URL` | URL вашого Google Apps Script / backend |
+
+5. **Deploy** — отримаєте URL на кшталт `https://schedule-3d.vercel.app`.
+
+Кожен `git push` у `main` автоматично перезбирає сайт.
+
+### Що працює на хостингу
+
+- Увесь UI: навплан, розклад, 3D, друк, імпорт/експорт JSON
+- Дані **лише в браузері** користувача (localStorage + IndexedDB) — не на сервері Vercel
+- Навігація через hash: `https://ваш-домен/#/cylinder`, `#/schedule` тощо
+- «Обрати папку» для пакетного експорту — у Chrome/Edge (HTTPS на Vercel підходить)
+
+### Локальна перевірка перед push
+
+```bash
+yarn build
+yarn preview
+```
 
 ## Ліцензія
 

@@ -32,3 +32,4 @@ dist-ssr
 # OS / tooling
 Thumbs.db
 *.tsbuildinfo
+.vercel

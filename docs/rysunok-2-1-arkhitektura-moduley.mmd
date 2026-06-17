@@ -1,0 +1,127 @@
+%% Рисунок 2.1 — Структурна схема модулів програмного засобу
+%% mermaid.live → Export PNG/SVG
+
+flowchart TB
+    subgraph L1[" "]
+        direction TB
+        MAIN["main.tsx"]
+        APP["App.tsx · AppRouter"]
+        ROUTE["utils/appRouting.ts"]
+        MAIN --> APP --> ROUTE
+    end
+
+    subgraph L2["Контекст React"]
+        direction LR
+        THEME["ThemeContext"]
+        PLAN["PlanningContext"]
+    end
+
+    APP --> THEME
+    APP --> PLAN
+
+    subgraph L3["src/pages — сторінки"]
+        direction TB
+        subgraph ROW1[" "]
+            direction LR
+            PG1["NavPlanPage"]
+            PG2["GroupsPage"]
+            PG3["TeacherPrefsPage"]
+            PG4["SubjectPrefsPage"]
+        end
+        subgraph ROW2[" "]
+            direction LR
+            PG5["RoomRulesPage"]
+            PG6["SchedulePage"]
+            PG7["CylinderPage"]
+        end
+    end
+
+    ROUTE --> L3
+    PLAN --> L3
+
+    subgraph L4["src/components — інтерфейс"]
+        direction TB
+        subgraph UI["Таблиці та панелі"]
+            direction LR
+            CM1["AppLayout · TopNav"]
+            CM2["NavPlanTable · DataTable"]
+            CM3["FilterPanel · DetailPanel"]
+            CM4["DocumentVersionsPanel"]
+        end
+        subgraph GL["3Dвізуалізація"]
+            direction LR
+            CM5["ScheduleScene"]
+            CM6["ScheduleCylinder"]
+            CM7["TimeSlotRing · Legend"]
+        end
+    end
+
+    L3 --> L4
+
+    subgraph L5["src/scheduler — автозбірка"]
+        SCH["springScheduler.ts"]
+    end
+
+    subgraph L6["src/utils — обробка даних"]
+        direction TB
+        subgraph U1[" "]
+            direction LR
+            UT1["parseNavPlan"]
+            UT2["normalize · navPlanClassify"]
+            UT3["groupCode · groupDefaults"]
+        end
+        subgraph U2[" "]
+            direction LR
+            UT4["scheduleConstraints"]
+            UT5["parallelSubgroups"]
+            UT6["conflicts · scheduleFilters"]
+        end
+        subgraph U3[" "]
+            direction LR
+            UT7["navPlanFilters"]
+            UT8["schedulePrintExport"]
+            UT9["slots · scheduleClusters"]
+        end
+    end
+
+    subgraph L7["src/storage — збереження"]
+        direction LR
+        ST1["planningStorage"]
+        ST2["documentStorage"]
+        ST3["scheduleStorage"]
+        ST4["navPlanFileStorage"]
+        ST5["cylinderFilterStorage"]
+    end
+
+    subgraph L8["src/types · src/data"]
+        direction LR
+        TD1["planning.ts · schedule.ts · documents.ts"]
+        TD2["defaults.ts · schedule.json"]
+    end
+
+    PLAN --> SCH
+    PLAN --> L7
+    PLAN --> U1
+    L3 --> SCH
+    L4 --> U2
+    SCH --> U2
+    SCH --> U1
+    L7 --> TD1
+    U1 --> TD1
+    SCH --> TD1
+
+    classDef entry fill:#dbeafe,stroke:#1d4ed8,stroke-width:2px
+    classDef ctx fill:#fef3c7,stroke:#b45309,stroke-width:2px
+    classDef pages fill:#ecfdf5,stroke:#047857,stroke-width:2px
+    classDef comp fill:#e0e7ff,stroke:#4338ca,stroke-width:2px
+    classDef core fill:#fce7f3,stroke:#be185d,stroke-width:2px
+    classDef store fill:#f1f5f9,stroke:#64748b,stroke-width:2px
+    classDef types fill:#fff7ed,stroke:#ea580c,stroke-width:2px
+
+    class MAIN,APP,ROUTE entry
+    class THEME,PLAN ctx
+    class PG1,PG2,PG3,PG4,PG5,PG6,PG7 pages
+    class CM1,CM2,CM3,CM4,CM5,CM6,CM7 comp
+    class SCH,UT1,UT2,UT3,UT4,UT5,UT6,UT7,UT8,UT9 core
+    class ST1,ST2,ST3,ST4,ST5 store
+    class TD1,TD2 types

@@ -36,7 +36,7 @@ import { buildSpringScheduleAsync, type ScheduleBuildProgress, type SpringSchedu
 import { enrichEntries } from '../utils/conflicts'
 import { syncPlanningGroupsFromNavPlan } from '../utils/groupDefaults'
 import { newId } from '../utils/normalize'
-import { buildPrintWeekRows, downloadJsonFile, printScheduleDocumentHtml } from '../utils/schedulePrintExport'
+import { downloadJsonFile, createPrintScheduleDocument, printScheduleDocumentHtml } from '../utils/schedulePrintExport'
 import {
   applyNavPlanImport,
   buildNavPlanExport,
@@ -44,6 +44,10 @@ import {
   parseNavPlanImport,
   snapshotToExportDocument,
 } from '../utils/navPlanJsonExchange'
+import {
+  exportCurrentScheduleJson as exportCurrentScheduleJsonFile,
+  parseScheduleImport,
+} from '../utils/scheduleJsonExchange'
 import { ensureEditorName } from '../storage/editorIdentity'
 
 export type ScheduleBuildState = {
@@ -82,6 +86,8 @@ type PlanningContextValue = {
   deleteNavPlanVersion: (id: string) => Promise<void>
   exportCurrentNavPlanJson: (label?: string, note?: string) => void
   importNavPlanJson: (file: File) => Promise<void>
+  importScheduleJson: (file: File) => Promise<void>
+  exportCurrentScheduleJson: (label?: string, note?: string) => void
   savePrintScheduleView: (
     kind: 'group' | 'teacher',
     targetName: string,
@@ -92,6 +98,13 @@ type PlanningContextValue = {
   listPrintScheduleViews: (kind?: 'group' | 'teacher') => Promise<PrintScheduleDocument[]>
   deletePrintScheduleView: (id: string) => Promise<void>
   printSavedSchedule: (id: string) => Promise<void>
+  printScheduleView: (
+    kind: 'group' | 'teacher',
+    targetName: string,
+    title: string,
+    entries: ScheduleEntry[],
+    note?: string,
+  ) => void
   saveLocal: () => void
   loadCloud: () => Promise<void>
   saveCloud: () => Promise<void>
@@ -305,6 +318,39 @@ export function PlanningProvider({ children }: { children: ReactNode }) {
     [store],
   )
 
+  const importScheduleJson = useCallback(
+    async (file: File) => {
+      const text = await file.text()
+      let parsed: unknown
+      try {
+        parsed = JSON.parse(text)
+      } catch {
+        throw new Error('Файл не є коректним JSON')
+      }
+      const doc = parseScheduleImport(parsed)
+      if (doc.schedule.groups.length === 0) throw new Error('У JSON немає груп')
+      persistSchedule(doc.schedule, doc.edited)
+      setStatus(
+        `Імпорт JSON · ${doc.schedule.groups.length} груп · ${doc.schedule.entries.length} пар · «${doc.label}» · ${doc.savedBy}`,
+      )
+    },
+    [persistSchedule],
+  )
+
+  const exportCurrentScheduleJson = useCallback(
+    (label?: string, note?: string) => {
+      if (!schedule) {
+        setStatus('Немає активного розкладу для експорту')
+        return
+      }
+      exportCurrentScheduleJsonFile(schedule, { label, note })
+      setStatus(
+        `Експорт JSON · ${schedule.groups.length} груп · ${schedule.entries.length} пар · ${new Date().toLocaleString('uk-UA')}`,
+      )
+    },
+    [schedule],
+  )
+
   const savePrintScheduleView = useCallback(
     async (
       kind: 'group' | 'teacher',
@@ -315,16 +361,16 @@ export function PlanningProvider({ children }: { children: ReactNode }) {
     ) => {
       if (!schedule) throw new Error('Немає активного розкладу')
       const doc: PrintScheduleDocument = {
+        ...createPrintScheduleDocument(
+          schedule,
+          kind,
+          targetName,
+          title,
+          entries,
+          ensureEditorName(),
+          note,
+        ),
         id: newId('prt'),
-        kind,
-        targetName,
-        title,
-        savedAt: new Date().toISOString(),
-        savedBy: ensureEditorName(),
-        note: note?.trim() || undefined,
-        meta: schedule.meta,
-        entries: structuredClone(entries),
-        weeks: buildPrintWeekRows(entries, schedule.groups, schedule.meta, kind),
       }
       await savePrintSchedule(doc)
       setStatus(`Збережено для друку: ${title}`)
@@ -340,7 +386,35 @@ export function PlanningProvider({ children }: { children: ReactNode }) {
       return
     }
     printScheduleDocumentHtml(doc)
+    setStatus(`Друк: ${doc.title}`)
   }, [])
+
+  const printScheduleView = useCallback(
+    (
+      kind: 'group' | 'teacher',
+      targetName: string,
+      title: string,
+      entries: ScheduleEntry[],
+      note?: string,
+    ) => {
+      if (!schedule) {
+        setStatus('Спочатку зберіть або згенеруйте розклад')
+        return
+      }
+      const doc = createPrintScheduleDocument(
+        schedule,
+        kind,
+        targetName,
+        title,
+        entries,
+        ensureEditorName(),
+        note,
+      )
+      printScheduleDocumentHtml(doc)
+      setStatus(`Друк: ${title}`)
+    },
+    [schedule],
+  )
 
   const saveLocal = useCallback(() => {
     savePlanningStore(store)
@@ -381,10 +455,13 @@ export function PlanningProvider({ children }: { children: ReactNode }) {
       deleteNavPlanVersion: deleteNavPlanSnapshot,
       exportCurrentNavPlanJson,
       importNavPlanJson,
+      importScheduleJson,
+      exportCurrentScheduleJson,
       savePrintScheduleView,
       listPrintScheduleViews: listPrintSchedules,
       deletePrintScheduleView: deletePrintSchedule,
       printSavedSchedule,
+      printScheduleView,
       saveLocal,
       loadCloud,
       saveCloud,
@@ -405,8 +482,11 @@ export function PlanningProvider({ children }: { children: ReactNode }) {
       restoreNavPlanVersion,
       exportCurrentNavPlanJson,
       importNavPlanJson,
+      importScheduleJson,
+      exportCurrentScheduleJson,
       savePrintScheduleView,
       printSavedSchedule,
+      printScheduleView,
       saveLocal,
       loadCloud,
       saveCloud,

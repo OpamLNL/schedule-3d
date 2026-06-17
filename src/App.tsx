@@ -5,7 +5,8 @@ import { ThemeProvider } from './context/ThemeContext'
 import { CylinderPage } from './pages/CylinderPage'
 import { GroupsPage } from './pages/GroupsPage'
 import { NavPlanPage } from './pages/NavPlanPage'
-import { PreferencesPage } from './pages/PreferencesPage'
+import { TeacherPrefsPage } from './pages/TeacherPrefsPage'
+import { SubjectPrefsPage } from './pages/SubjectPrefsPage'
 import { RoomRulesPage } from './pages/RoomRulesPage'
 import { SchedulePage } from './pages/SchedulePage'
 import { readAppPageFromHash, writeAppPageToHash } from './utils/appRouting'
@@ -38,9 +39,11 @@ function AppRouter() {
 
   if (page === 'nav') return <NavPlanPage {...common} />
   if (page === 'groups') return <GroupsPage {...common} />
+  if (page === 'teacherPrefs') return <TeacherPrefsPage {...common} />
+  if (page === 'subjectPrefs') return <SubjectPrefsPage {...common} />
   if (page === 'rooms') return <RoomRulesPage {...common} />
   if (page === 'schedule') return <SchedulePage {...common} />
-  return <PreferencesPage {...common} />
+  return <NavPlanPage {...common} />
 }
 
 export default function App() {

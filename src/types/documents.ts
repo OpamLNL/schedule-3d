@@ -44,6 +44,7 @@ export type PrintWeekRow = {
   groupCode: string
   parallel: boolean
   teachers?: string[]
+  hasConflict?: boolean
 }
 
 export type PrintScheduleDocument = {

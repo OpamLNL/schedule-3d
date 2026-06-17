@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { AppLayout, SaveToolbar, type AppPage } from '../components/AppLayout'
+import { BatchExportPanel } from '../components/BatchExportPanel'
 import { DocumentVersionsPanel } from '../components/DocumentVersionsPanel'
 import { ScheduleBuildProgress } from '../components/ScheduleBuildProgress'
 import { exportScheduleDocumentJson, usePlanning } from '../context/PlanningContext'
@@ -19,7 +20,10 @@ export function SchedulePage({ page, onPageChange }: PageProps) {
     loadScheduleVersion,
     listScheduleVersions,
     deleteScheduleVersion,
+    importScheduleJson,
+    exportCurrentScheduleJson,
     status,
+    setStatus,
   } = usePlanning()
   const [scheduleDocs, setScheduleDocs] = useState<ScheduleDocument[]>([])
 
@@ -138,6 +142,10 @@ export function SchedulePage({ page, onPageChange }: PageProps) {
         </section>
       ) : null}
 
+      {schedule && !scheduleBuild.running ? (
+        <BatchExportPanel schedule={schedule} onStatus={setStatus} />
+      ) : null}
+
       <DocumentVersionsPanel
         kind="schedule"
         items={scheduleDocs}
@@ -148,6 +156,15 @@ export function SchedulePage({ page, onPageChange }: PageProps) {
         onLoad={loadScheduleVersion}
         onDelete={deleteScheduleVersion}
         onExport={exportScheduleDocumentJson}
+        onImport={async (file) => {
+          try {
+            await importScheduleJson(file)
+          } catch (err) {
+            setStatus(err instanceof Error ? err.message : 'Помилка імпорту')
+          }
+        }}
+        onExportCurrent={exportCurrentScheduleJson}
+        canExportCurrent={Boolean(schedule)}
       />
 
       {store.navPlan.length === 0 ? (

@@ -1,0 +1,75 @@
+%% Рисунок 2.2 — Логічна модель сховища даних
+%% localStorage + IndexedDB
+
+erDiagram
+    PLANNING_STORE ||--o{ NAV_PLAN_ROW : navPlan
+    PLANNING_STORE ||--o{ GROUP_ROW : groups
+    PLANNING_STORE ||--o{ ROOM_RULE : roomRules
+    PLANNING_STORE ||--o{ TEACHER_PREF : teacherPrefs
+    PLANNING_STORE ||--o{ SUBJECT_PREF : subjectPrefs
+
+    SCHEDULE_DATA ||--|| SCHEDULE_META : meta
+    SCHEDULE_DATA ||--o{ SCHEDULE_GROUP : groups
+    SCHEDULE_DATA ||--o{ SCHEDULE_TEACHER : teachers
+    SCHEDULE_DATA ||--o{ SCHEDULE_ROOM : rooms
+    SCHEDULE_DATA ||--o{ SCHEDULE_ENTRY : entries
+
+    NAV_PLAN_SNAPSHOT ||--o{ NAV_PLAN_ROW : payload
+    NAV_PLAN_SNAPSHOT }o--o| SCHEDULE_DOCUMENT : navPlanSnapshotId
+
+    SCHEDULE_DOCUMENT ||--|| SCHEDULE_DATA : schedule
+    PRINT_DOCUMENT }o--o| SCHEDULE_DOCUMENT : scheduleDocumentId
+
+    PLANNING_STORE {
+        string key "schedule3d-planning-v1"
+        string storage "localStorage"
+    }
+
+    NAV_PLAN_ROW {
+        string id PK
+        string groupCode
+        string subject
+        string teacher
+        int hoursSpring
+        string planKind
+    }
+
+    GROUP_ROW {
+        string id PK
+        string code
+        int weeksSpring
+        string room
+        int shift
+    }
+
+    SCHEDULE_ENTRY {
+        string id PK
+        string groupId FK
+        int slotId
+        string subject
+        string teacher
+        string room
+    }
+
+    NAV_PLAN_SNAPSHOT {
+        string id PK
+        int version
+        string savedAt
+        string savedBy
+        json payload
+    }
+
+    SCHEDULE_DOCUMENT {
+        string id PK
+        string label
+        string savedAt
+        string navPlanSnapshotId FK
+        json schedule
+    }
+
+    PRINT_DOCUMENT {
+        string id PK
+        string kind
+        string targetName
+        json weeks
+    }

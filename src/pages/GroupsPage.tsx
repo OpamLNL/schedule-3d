@@ -1,13 +1,24 @@
+import { useMemo, useState } from 'react'
 import { AppLayout, SaveToolbar, type AppPage } from '../components/AppLayout'
 import { DataTable } from '../components/DataTable'
+import { TableTextFilters } from '../components/TableTextFilters'
 import { usePlanning } from '../context/PlanningContext'
 import type { GroupRow } from '../types/planning'
 import { newId, normalizeGroupCode } from '../utils/normalize'
+import { filterTableRows } from '../utils/tableRowFilters'
 
 type PageProps = { page: AppPage; onPageChange: (page: AppPage) => void }
 
+const emptyGroupFilters = { code: '', room: '', shift: '', query: '' }
+
 export function GroupsPage({ page, onPageChange }: PageProps) {
   const { store, setStore, saveLocal, loadCloud, saveCloud, cloudEnabled, status } = usePlanning()
+  const [filters, setFilters] = useState(emptyGroupFilters)
+
+  const filteredRows = useMemo(
+    () => filterTableRows(store.groups, filters, ['code', 'room', 'shift']),
+    [store.groups, filters],
+  )
 
   const updateRow = (id: string, key: keyof GroupRow, value: string | number) => {
     setStore((current) => ({
@@ -50,7 +61,7 @@ export function GroupsPage({ page, onPageChange }: PageProps) {
       page={page}
       onPageChange={onPageChange}
       title="Групи"
-      subtitle="Навчальні тижні, стала аудиторія та зміна (1 — пари 1–4, 2 — пари 5–8)."
+      subtitle={`Навчальні тижні, стала аудиторія та зміна. Показано ${filteredRows.length} з ${store.groups.length}.`}
       toolbar={
         <SaveToolbar
           onSaveLocal={saveLocal}
@@ -66,8 +77,18 @@ export function GroupsPage({ page, onPageChange }: PageProps) {
       }
       status={status}
     >
+      <TableTextFilters
+        fields={[
+          { key: 'code', label: 'Група', placeholder: 'КН31…' },
+          { key: 'room', label: 'Аудиторія', placeholder: '301…' },
+          { key: 'shift', label: 'Зміна', placeholder: '1 або 2' },
+        ]}
+        values={filters}
+        onChange={(key, value) => setFilters((current) => ({ ...current, [key]: value }))}
+        onReset={() => setFilters(emptyGroupFilters)}
+      />
       <DataTable
-        rows={store.groups}
+        rows={filteredRows}
         onChange={updateRow}
         onDelete={deleteRow}
         columns={[

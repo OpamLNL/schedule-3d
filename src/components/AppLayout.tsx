@@ -1,13 +1,20 @@
 import type { ReactNode } from 'react'
 import { ThemeToggle } from './ThemeToggle'
 
-export type AppPage = 'nav' | 'groups' | 'rooms' | 'prefs' | 'schedule' | 'cylinder'
+export type AppPage =
+  | 'nav'
+  | 'groups'
+  | 'teacherPrefs'
+  | 'subjectPrefs'
+  | 'rooms'
+  | 'schedule'
+  | 'cylinder'
 
 const PAGES: { id: AppPage; label: string }[] = [
   { id: 'nav', label: 'Навплан' },
   { id: 'groups', label: 'Групи' },
+  { id: 'teacherPrefs', label: 'Викладачі' },
   { id: 'rooms', label: 'Аудиторії' },
-  { id: 'prefs', label: 'Преференції' },
   { id: 'schedule', label: 'Розклад' },
   { id: 'cylinder', label: '3D циліндр' },
 ]
