@@ -14,7 +14,7 @@ type PageProps = { page: AppPage; onPageChange: (page: AppPage) => void }
 const emptySubjectFilters = { groupCode: '', subject: '', rule: '', query: '' }
 
 export function SubjectPrefsPage({ page, onPageChange }: PageProps) {
-  const { store, setStore, saveLocal, loadCloud, saveCloud, cloudEnabled, status } = usePlanning()
+  const { store, setStore, saveLocal, status } = usePlanning()
   const [subjectFilters, setSubjectFilters] = useState(emptySubjectFilters)
 
   const subjects = useMemo(() => {
@@ -57,9 +57,6 @@ export function SubjectPrefsPage({ page, onPageChange }: PageProps) {
       toolbar={
         <SaveToolbar
           onSaveLocal={saveLocal}
-          onLoadCloud={loadCloud}
-          onSaveCloud={saveCloud}
-          cloudEnabled={cloudEnabled}
           extra={
             <>
               <button type="button" className="btn" onClick={() => onPageChange('teacherPrefs')}>

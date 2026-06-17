@@ -65,15 +65,9 @@ export function AppLayout({ page, onPageChange, title, subtitle, toolbar, status
 
 export function SaveToolbar({
   onSaveLocal,
-  onLoadCloud,
-  onSaveCloud,
-  cloudEnabled,
   extra,
 }: {
   onSaveLocal: () => void
-  onLoadCloud?: () => void
-  onSaveCloud?: () => void
-  cloudEnabled: boolean
   extra?: ReactNode
 }) {
   return (
@@ -82,18 +76,6 @@ export function SaveToolbar({
       <button type="button" className="btn primary" onClick={onSaveLocal}>
         Зберегти
       </button>
-      {cloudEnabled ? (
-        <>
-          <button type="button" className="btn" onClick={onLoadCloud}>
-            З хмари
-          </button>
-          <button type="button" className="btn" onClick={onSaveCloud}>
-            В хмару
-          </button>
-        </>
-      ) : (
-        <span className="muted toolbar-note">Хмара: VITE_SHEETS_API_URL</span>
-      )}
     </div>
   )
 }

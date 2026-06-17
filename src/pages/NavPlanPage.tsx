@@ -21,9 +21,6 @@ export function NavPlanPage({ page, onPageChange }: PageProps) {
     store,
     setStore,
     saveLocal,
-    loadCloud,
-    saveCloud,
-    cloudEnabled,
     status,
     setStatus,
     saveNavPlanVersion,
@@ -180,9 +177,6 @@ export function NavPlanPage({ page, onPageChange }: PageProps) {
   const toolbar = (
     <SaveToolbar
       onSaveLocal={saveLocal}
-      onLoadCloud={loadCloud}
-      onSaveCloud={saveCloud}
-      cloudEnabled={cloudEnabled}
       extra={
         <>
           <input

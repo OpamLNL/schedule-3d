@@ -49,16 +49,6 @@ yarn preview
 
 Дані зберігаються локально в браузері (`localStorage` + `IndexedDB`). Після F5 фільтри циліндра та активна вкладка (`#/cylinder`) відновлюються.
 
-## Хмарна синхронізація (необовʼязково)
-
-Скопіюйте `.env.example` → `.env` і задайте:
-
-```env
-VITE_SHEETS_API_URL=https://your-backend.example/exec
-```
-
-Без цієї змінної працює лише локальне збереження.
-
 ## Стек
 
 - React 18, TypeScript, Vite
@@ -105,15 +95,9 @@ git push origin main
    | Output Directory | `dist` |
    | Install Command | `yarn install --frozen-lockfile` |
 
-4. **Environment Variables** (необовʼязково, лише для хмари):
+4. **Deploy** — отримаєте URL на кшталт `https://schedule-3d.vercel.app`.
 
-   | Name | Value |
-   |------|-------|
-   | `VITE_SHEETS_API_URL` | URL вашого Google Apps Script / backend |
-
-5. **Deploy** — отримаєте URL на кшталт `https://schedule-3d.vercel.app`.
-
-Кожен `git push` у `main` автоматично перезбирає сайт.
+Кожен `git push` у `main` автоматично перезбирає сайт. Змінні оточення на Vercel **не потрібні**.
 
 ### Що працює на хостингу
 

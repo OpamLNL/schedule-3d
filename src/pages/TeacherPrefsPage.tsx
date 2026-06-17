@@ -15,7 +15,7 @@ type PageProps = { page: AppPage; onPageChange: (page: AppPage) => void }
 const emptyTeacherFilters = { teacher: '', rule: '', query: '' }
 
 export function TeacherPrefsPage({ page, onPageChange }: PageProps) {
-  const { store, schedule, setStore, saveLocal, loadCloud, saveCloud, cloudEnabled, status } = usePlanning()
+  const { store, schedule, setStore, saveLocal, status } = usePlanning()
   const [teacherFilters, setTeacherFilters] = useState(emptyTeacherFilters)
 
   const ruleLabelByCode = useMemo(
@@ -57,9 +57,6 @@ export function TeacherPrefsPage({ page, onPageChange }: PageProps) {
       toolbar={
         <SaveToolbar
           onSaveLocal={saveLocal}
-          onLoadCloud={loadCloud}
-          onSaveCloud={saveCloud}
-          cloudEnabled={cloudEnabled}
           extra={
             <>
               <button type="button" className="btn" onClick={() => onPageChange('subjectPrefs')}>

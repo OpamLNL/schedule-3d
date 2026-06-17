@@ -45,7 +45,6 @@ export function SchedulePage({ page, onPageChange }: PageProps) {
   const toolbar = (
     <SaveToolbar
       onSaveLocal={() => void saveCurrentSchedule().then(refreshScheduleDocs)}
-      cloudEnabled={false}
       extra={
         <>
           <button

@@ -25,12 +25,7 @@ import {
   savePrintSchedule,
   saveScheduleDocument,
 } from '../storage/documentStorage'
-import {
-  loadPlanningFromCloud,
-  loadPlanningStore,
-  savePlanningStore,
-  savePlanningToCloud,
-} from '../storage/planningStorage'
+import { loadPlanningStore, savePlanningStore } from '../storage/planningStorage'
 import { loadGeneratedSchedule, saveGeneratedSchedule } from '../storage/scheduleStorage'
 import { buildSpringScheduleAsync, type ScheduleBuildProgress, type SpringScheduleResult } from '../scheduler/springScheduler'
 import { enrichEntries } from '../utils/conflicts'
@@ -106,9 +101,6 @@ type PlanningContextValue = {
     note?: string,
   ) => void
   saveLocal: () => void
-  loadCloud: () => Promise<void>
-  saveCloud: () => Promise<void>
-  cloudEnabled: boolean
   status: string | null
   setStatus: (message: string | null) => void
 }
@@ -130,7 +122,6 @@ export function PlanningProvider({ children }: { children: ReactNode }) {
   const [scheduleEdited, setScheduleEdited] = useState(false)
   const [scheduleBuild, setScheduleBuild] = useState<ScheduleBuildState>(idleBuildState)
   const [status, setStatus] = useState<string | null>(null)
-  const cloudEnabled = Boolean(import.meta.env.VITE_SHEETS_API_URL)
   const skipAutoSave = useRef(true)
 
   useEffect(() => {
@@ -421,21 +412,6 @@ export function PlanningProvider({ children }: { children: ReactNode }) {
     setStatus('Збережено локально')
   }, [store])
 
-  const loadCloud = useCallback(async () => {
-    const remote = await loadPlanningFromCloud()
-    if (remote) {
-      setStore(remote)
-      savePlanningStore(remote)
-      setStatus('Завантажено з хмари')
-    }
-  }, [])
-
-  const saveCloud = useCallback(async () => {
-    await savePlanningToCloud(store)
-    savePlanningStore(store)
-    setStatus('Збережено в хмарі')
-  }, [store])
-
   const value = useMemo(
     () => ({
       store,
@@ -463,9 +439,6 @@ export function PlanningProvider({ children }: { children: ReactNode }) {
       printSavedSchedule,
       printScheduleView,
       saveLocal,
-      loadCloud,
-      saveCloud,
-      cloudEnabled,
       status,
       setStatus,
     }),
@@ -488,9 +461,6 @@ export function PlanningProvider({ children }: { children: ReactNode }) {
       printSavedSchedule,
       printScheduleView,
       saveLocal,
-      loadCloud,
-      saveCloud,
-      cloudEnabled,
       status,
     ],
   )

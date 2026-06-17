@@ -46,21 +46,3 @@ export function createDefaultStore(): PlanningStore {
   }
 }
 
-const sheetsUrl = import.meta.env.VITE_SHEETS_API_URL as string | undefined
-
-export async function loadPlanningFromCloud(): Promise<PlanningStore | null> {
-  if (!sheetsUrl) return null
-  const res = await fetch(`${sheetsUrl}?action=load`)
-  if (!res.ok) throw new Error(`Хмара: ${res.status}`)
-  return (await res.json()) as PlanningStore
-}
-
-export async function savePlanningToCloud(store: PlanningStore): Promise<void> {
-  if (!sheetsUrl) throw new Error('VITE_SHEETS_API_URL не задано')
-  const res = await fetch(sheetsUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'save', data: store }),
-  })
-  if (!res.ok) throw new Error(`Хмара: ${res.status}`)
-}

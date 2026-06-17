@@ -12,7 +12,7 @@ type PageProps = { page: AppPage; onPageChange: (page: AppPage) => void }
 const emptyGroupFilters = { code: '', room: '', shift: '', query: '' }
 
 export function GroupsPage({ page, onPageChange }: PageProps) {
-  const { store, setStore, saveLocal, loadCloud, saveCloud, cloudEnabled, status } = usePlanning()
+  const { store, setStore, saveLocal, status } = usePlanning()
   const [filters, setFilters] = useState(emptyGroupFilters)
 
   const filteredRows = useMemo(
@@ -65,9 +65,6 @@ export function GroupsPage({ page, onPageChange }: PageProps) {
       toolbar={
         <SaveToolbar
           onSaveLocal={saveLocal}
-          onLoadCloud={loadCloud}
-          onSaveCloud={saveCloud}
-          cloudEnabled={cloudEnabled}
           extra={
             <button type="button" className="btn" onClick={addRow}>
               + Група
